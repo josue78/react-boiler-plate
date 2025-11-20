@@ -1,0 +1,452 @@
+# Reglas de UI/UX
+
+Este archivo define las reglas y estándares para el diseño de interfaces, accesibilidad y experiencia de usuario en el proyecto.
+
+## Idioma del Código
+
+**IMPORTANTE**: El idioma principal del código, comentarios y nombres será **inglés**. Para la interfaz de usuario, el sistema i18n tiene **inglés como idioma principal y fallback**. Las traducciones pueden incluir múltiples idiomas, pero el código fuente siempre estará en inglés.
+
+## Principios Generales
+
+1. **Accesibilidad primero**: La aplicación debe ser usable por todos, independientemente de sus capacidades
+2. **Consistencia**: Mantener patrones de diseño consistentes en toda la aplicación
+3. **Responsive design**: La aplicación debe funcionar bien en todos los tamaños de pantalla
+4. **Internacionalización**: Todos los textos deben estar traducidos y ser culturalmente apropiados
+5. **Feedback visual**: Proporcionar feedback claro para todas las acciones del usuario
+
+## Reglas Específicas
+
+### Componentes Mantine
+
+Siempre usar componentes de Mantine en lugar de HTML nativo cuando sea posible:
+
+**Ejemplo correcto:**
+
+```tsx
+import { Button, TextInput, Card } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
+
+function UserForm() {
+  const { t } = useTranslation();
+  
+  return (
+    <Card padding="lg" radius="md" withBorder>
+      <TextInput
+        label={t('form.name')}
+        placeholder={t('form.namePlaceholder')}
+        required
+        aria-label={t('form.nameAria')}
+      />
+      <Button type="submit" mt="md">
+        {t('common.save')}
+      </Button>
+    </Card>
+  );
+}
+```
+
+**Ejemplo incorrecto:**
+
+```tsx
+function UserForm() {
+  return (
+    <div>
+      <input type="text" placeholder="Nombre" />
+      <button>Guardar</button>
+    </div>
+  );
+}
+```
+
+### Internacionalización (i18n)
+
+**TODOS** los textos visibles al usuario deben usar el sistema de traducción. El idioma principal y fallback es **inglés**.
+
+**Ejemplo correcto:**
+
+```tsx
+import { useTranslation } from 'react-i18next';
+
+function Dashboard() {
+  const { t } = useTranslation();
+
+  return (
+    <Container>
+      <Text size="xl" fw={700}>
+        {t('dashboard.title')}
+      </Text>
+      <Button>{t('common.save')}</Button>
+    </Container>
+  );
+}
+```
+
+**Ejemplo incorrecto:**
+
+```tsx
+function Dashboard() {
+  return (
+    <Container>
+      <Text>Dashboard</Text>
+      <Button>Save</Button>
+    </Container>
+  );
+}
+```
+
+**Estructura de claves de traducción:**
+
+- Usar nombres descriptivos y jerárquicos en inglés
+- Agrupar por feature o sección
+- Usar notación de punto para anidación
+- El archivo `en.json` es el idioma principal y fallback
+
+**Configuración i18n (src/i18n/config.ts):**
+
+```typescript
+i18n.init({
+  resources,
+  fallbackLng: 'en', // English is the primary language
+  supportedLngs: ['en', 'es'],
+  // ...
+});
+```
+
+**Estructura de archivos de traducción:**
+
+```json
+// src/i18n/locales/en.json (PRIMARY - fallback)
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "totalUsers": "Total Users",
+    "recentActivity": "Recent Activity"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "error": "Error"
+  }
+}
+
+// src/i18n/locales/es.json (Secondary)
+{
+  "dashboard": {
+    "title": "Panel de Control",
+    "totalUsers": "Total de Usuarios",
+    "recentActivity": "Actividad Reciente"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "error": "Error"
+  }
+}
+```
+
+### Accesibilidad (a11y)
+
+#### Atributos ARIA
+
+Siempre incluir atributos ARIA apropiados:
+
+**Ejemplo correcto:**
+
+```tsx
+<ActionIcon
+  variant="default"
+  size="lg"
+  aria-label={t('header.startTourAria')}
+  onClick={startTour}
+>
+  <IconHelp size={18} />
+</ActionIcon>
+```
+
+#### Navegación por teclado
+
+- Todos los elementos interactivos deben ser accesibles con teclado
+- Usar `TabIndex` apropiadamente
+- Proporcionar indicadores visuales de foco
+
+**Ejemplo correcto:**
+
+```tsx
+<Button
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleClick();
+    }
+  }}
+>
+  {t('common.submit')}
+</Button>
+```
+
+#### Contraste de colores
+
+- Mantener ratios de contraste WCAG AA mínimo (4.5:1 para texto normal)
+- Usar los colores del tema de Mantine que ya cumplen estos estándares
+
+#### Etiquetas de formularios
+
+Siempre asociar labels con inputs:
+
+**Ejemplo correcto:**
+
+```tsx
+<TextInput
+  label={t('form.email')}
+  placeholder={t('form.emailPlaceholder')}
+  required
+  aria-required="true"
+  id="email-input"
+/>
+```
+
+### Responsive Design
+
+Usar el sistema de breakpoints de Mantine y Grid responsive:
+
+**Ejemplo correcto:**
+
+```tsx
+<Grid>
+  <Grid.Col span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
+    <Card>Contenido</Card>
+  </Grid.Col>
+</Grid>
+```
+
+**Breakpoints de Mantine:**
+- `xs`: 36em (576px)
+- `sm`: 48em (768px)
+- `md`: 62em (992px)
+- `lg`: 75em (1200px)
+- `xl`: 88em (1408px)
+
+### Estados de Carga y Error
+
+Siempre manejar estados de carga y error de forma consistente:
+
+**Ejemplo correcto:**
+
+```tsx
+function DashboardDemo() {
+  const { data, loading, error } = useDashboardData();
+  const { t } = useTranslation();
+
+  if (loading) {
+    return (
+      <Container size="xl" py="xl">
+        <Group justify="center">
+          <Loader size="lg" />
+        </Group>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container size="xl" py="xl">
+        <Alert color="red" title={t('common.error')}>
+          {error}
+        </Alert>
+      </Container>
+    );
+  }
+
+  return <DashboardContent data={data} />;
+}
+```
+
+### Feedback Visual
+
+Proporcionar feedback inmediato para acciones del usuario:
+
+**Ejemplo correcto:**
+
+```tsx
+import { notifications } from '@mantine/notifications';
+
+function handleSave() {
+  try {
+    await saveData();
+    notifications.show({
+      title: t('common.success'),
+      message: t('common.dataSaved'),
+      color: 'green',
+    });
+  } catch (error) {
+    notifications.show({
+      title: t('common.error'),
+      message: t('common.saveError'),
+      color: 'red',
+    });
+  }
+}
+```
+
+### Espaciado y Layout
+
+Usar el sistema de espaciado de Mantine de forma consistente:
+
+**Ejemplo correcto:**
+
+```tsx
+<Stack gap="md">
+  <Card padding="lg">
+    <Group justify="space-between" mb="md">
+      <Text size="lg" fw={600}>{t('section.title')}</Text>
+    </Group>
+    <Text size="sm" c="dimmed">{t('section.content')}</Text>
+  </Card>
+</Stack>
+```
+
+**Valores comunes de espaciado:**
+- `xs`: 10px
+- `sm`: 12px
+- `md`: 16px
+- `lg`: 20px
+- `xl`: 32px
+
+### Iconos
+
+Usar Tabler Icons de forma consistente:
+
+**Ejemplo correcto:**
+
+```tsx
+import { IconUsers, IconSettings } from '@tabler/icons-react';
+
+<IconUsers size={18} />
+<IconSettings size={24} />
+```
+
+**Standard sizes:**
+- Small: 16-18px (icons in small buttons)
+- Medium: 20-24px (icons in buttons and cards)
+- Large: 32px+ (featured icons in cards)
+
+### Themes and Dark Mode
+
+The project supports light and dark modes. Ensure components work in both:
+
+**Ejemplo correcto:**
+
+```tsx
+// Use theme colors, not hardcoded colors
+<Card
+  style={(theme) => ({
+    backgroundColor: theme.colorScheme === 'dark'
+      ? theme.colors.dark[7]
+      : theme.white,
+  })}
+>
+```
+
+Or better yet, use Mantine components that handle this automatically:
+
+```tsx
+<Card shadow="sm" padding="lg" radius="md" withBorder>
+  {/* Mantine automatically handles colors based on theme */}
+</Card>
+```
+
+### Reusable Components
+
+Create reusable components in `src/shared/components/` when:
+- The same pattern is used 3+ times
+- The component encapsulates complex UI logic
+- The component has useful configurable props
+
+**Ejemplo:**
+
+```tsx
+// src/shared/components/StatCard.tsx
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ComponentType<{ size?: number }>;
+  color?: string;
+}
+
+export function StatCard({ title, value, icon: Icon, color = 'blue' }: StatCardProps) {
+  const { t } = useTranslation();
+
+  return (
+    <Card shadow="sm" padding="lg" radius="md" withBorder>
+      <Group justify="space-between">
+        <div>
+          <Text size="xs" c="dimmed" fw={500}>
+            {title}
+          </Text>
+          <Text size="xl" fw={700} mt="xs">
+            {value}
+          </Text>
+        </div>
+        <Icon size={32} color={`var(--mantine-color-${color}-6)`} />
+      </Group>
+    </Card>
+  );
+}
+```
+
+### Tours and Onboarding
+
+Use `driver.js` for interactive tours when needed:
+
+**Ejemplo correcto:**
+
+```tsx
+import { useTour } from '../../shared/hooks/useTour';
+
+function AppShell() {
+  const { startTour } = useTour();
+
+  return (
+    <ActionIcon
+      onClick={startTour}
+      aria-label={t('header.startTourAria')}
+    >
+      <IconHelp />
+    </ActionIcon>
+  );
+}
+
+// In components, use data-tour to mark elements
+<Grid data-tour="dashboard-cards">
+  {/* ... */}
+</Grid>
+```
+
+### UI Performance
+
+- Use `React.memo` for components that re-render frequently
+- Lazy loading for heavy components with `React.lazy`
+- Virtualization for long lists (use Mantine components when available)
+
+**Example:**
+
+```tsx
+const HeavyComponent = React.memo(function HeavyComponent({ data }) {
+  // Component only re-renders if data changes
+  return <ComplexVisualization data={data} />;
+});
+```
+
+## UI/UX Checklist
+
+Before considering a component complete, verify:
+
+- [ ] All text uses `t()` from i18n
+- [ ] Appropriate ARIA attributes included
+- [ ] Keyboard navigation functional
+- [ ] Responsive across all breakpoints
+- [ ] Loading and error states handled
+- [ ] Visual feedback for user actions
+- [ ] Works correctly in light and dark modes
+- [ ] Consistent and appropriate icons
+- [ ] Consistent spacing using Mantine system
+- [ ] Code, comments, and variable names in English

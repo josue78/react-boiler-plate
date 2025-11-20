@@ -1,0 +1,453 @@
+# Reglas de Seguridad
+
+Este archivo define las reglas y estándares de seguridad para el desarrollo seguro en el proyecto.
+
+## Idioma del Código
+
+**IMPORTANTE**: El idioma principal del código, comentarios, nombres de variables, funciones y mensajes de error en el código será **inglés**. Los mensajes de error mostrados al usuario pueden estar traducidos vía i18n, pero el código fuente siempre estará en inglés.
+
+## Principios Generales
+
+1. **Defensa en profundidad**: Implementar múltiples capas de seguridad
+2. **Principio de menor privilegio**: Solo exponer lo mínimo necesario
+3. **Validación de entrada**: Nunca confiar en datos del usuario o externos
+4. **Sanitización de salida**: Limpiar datos antes de mostrarlos
+5. **Seguridad por defecto**: Configuraciones seguras por defecto
+
+## Reglas Específicas
+
+### Manejo de Datos Sensibles
+
+#### Nunca exponer información sensible en el código
+
+**Ejemplo incorrecto:**
+
+```typescript
+// ❌ NUNCA hacer esto
+const API_KEY = 'sk_live_1234567890abcdef';
+const DB_PASSWORD = 'mypassword123';
+```
+
+**Ejemplo correcto:**
+
+```typescript
+// ✅ Use environment variables
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+// Validate it exists
+if (!API_KEY) {
+  throw new Error('VITE_API_KEY is not configured');
+}
+```
+
+#### Variables de entorno
+
+- Usar el prefijo `VITE_` para variables accesibles en el cliente
+- **NUNCA** incluir secretos en variables `VITE_*` (son visibles en el bundle)
+- Secretos deben estar solo en el backend
+- Documentar variables requeridas en `.env.example`
+
+**Estructura de .env.example:**
+
+```env
+# API Configuration
+VITE_API_URL=https://api.example.com
+VITE_APP_NAME=My App
+
+# DO NOT include secrets here - these are client-side only
+# Secrets must be in the backend
+```
+
+### Validación de Datos
+
+#### Validación en el Frontend
+
+Siempre validar datos de entrada del usuario:
+
+**Ejemplo correcto:**
+
+```typescript
+interface UserInput {
+  email: string;
+  password: string;
+  age?: number;
+}
+
+function validateUserInput(input: UserInput): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+
+  // Validar email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(input.email)) {
+    errors.push('Email inválido');
+  }
+
+  // Validar password
+  if (input.password.length < 8) {
+    errors.push('La contraseña debe tener al menos 8 caracteres');
+  }
+
+  if (!/[A-Z]/.test(input.password)) {
+    errors.push('La contraseña debe contener al menos una mayúscula');
+  }
+
+  if (!/[0-9]/.test(input.password)) {
+    errors.push('La contraseña debe contener al menos un número');
+  }
+
+  // Validar edad si se proporciona
+  if (input.age !== undefined && (input.age < 0 || input.age > 150)) {
+    errors.push('Edad inválida');
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+```
+
+**Usar validación en componentes:**
+
+```tsx
+function UserForm() {
+  const [errors, setErrors] = useState<string[]>([]);
+  const { t } = useTranslation();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const input: UserInput = {
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+    };
+
+    const validation = validateUserInput(input);
+    if (!validation.valid) {
+      // Translate validation errors for UI
+      setErrors(validation.errors.map(err => t(`validation.${err}`)));
+      return;
+    }
+
+    // Proceed with submission
+    submitUserData(input);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {errors.map((error, index) => (
+        <Alert key={index} color="red" mb="md">
+          {error}
+        </Alert>
+      ))}
+      {/* ... form fields ... */}
+    </form>
+  );
+}
+```
+
+#### Sanitización de Salida
+
+Siempre sanitizar datos antes de renderizarlos para prevenir XSS:
+
+**Ejemplo correcto (React lo hace automáticamente):**
+
+```tsx
+// ✅ React automatically escapes content
+function UserProfile({ userName }: { userName: string }) {
+  return <Text>{userName}</Text>; // Safe - React escapes content
+}
+```
+
+**Dangerous example (avoid):**
+
+```tsx
+// ❌ NEVER use dangerouslySetInnerHTML without sanitizing
+function UserProfile({ userBio }: { userBio: string }) {
+  // DANGEROUS - can allow XSS
+  return <div dangerouslySetInnerHTML={{ __html: userBio }} />;
+}
+```
+
+**If you need HTML, sanitize first:**
+
+```tsx
+import DOMPurify from 'dompurify';
+
+function UserProfile({ userBio }: { userBio: string }) {
+  const sanitized = DOMPurify.sanitize(userBio);
+  return <div dangerouslySetInnerHTML={{ __html: sanitized }} />;
+}
+```
+
+### Autenticación y Autorización
+
+#### Tokens de Autenticación
+
+- **NUNCA** almacenar tokens en localStorage si contienen información sensible
+- Usar httpOnly cookies cuando sea posible (backend)
+- Si se usa localStorage, implementar rotación de tokens
+- Validar tokens antes de usarlos
+
+**Ejemplo correcto:**
+
+```typescript
+// Authentication service
+export const authService = {
+  getToken(): string | null {
+    // Only store short-lived access tokens
+    return localStorage.getItem('accessToken');
+  },
+
+  setToken(token: string): void {
+    localStorage.setItem('accessToken', token);
+    // Set expiration
+    localStorage.setItem('tokenExpiry', String(Date.now() + 15 * 60 * 1000)); // 15 min
+  },
+
+  isTokenValid(): boolean {
+    const token = this.getToken();
+    const expiry = localStorage.getItem('tokenExpiry');
+
+    if (!token || !expiry) return false;
+
+    // Verify it hasn't expired
+    return Date.now() < Number(expiry);
+  },
+
+  clearToken(): void {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('tokenExpiry');
+  },
+};
+```
+
+#### Headers de Seguridad en Requests
+
+Siempre incluir headers apropiados en peticiones HTTP:
+
+**Ejemplo correcto:**
+
+```typescript
+async function apiRequest<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = authService.getToken();
+
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+    // Additional security headers
+    'X-Requested-With': 'XMLHttpRequest',
+  };
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      ...headers,
+      ...options.headers,
+    },
+    credentials: 'include', // For httpOnly cookies
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
+}
+```
+
+### Protección contra CSRF
+
+- Usar tokens CSRF cuando el backend lo requiera
+- Validar origen de las peticiones
+- Usar SameSite cookies cuando sea posible
+
+**Ejemplo:**
+
+```typescript
+// Get CSRF token from backend
+async function getCsrfToken(): Promise<string> {
+  const response = await fetch('/api/csrf-token', {
+    credentials: 'include',
+  });
+  const { token } = await response.json();
+  return token;
+}
+
+// Include in requests
+async function secureRequest(endpoint: string, data: unknown) {
+  const csrfToken = await getCsrfToken();
+
+  return fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': csrfToken,
+    },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+}
+```
+
+### Manejo Seguro de Errores
+
+**NUNCA** exponer información sensible en mensajes de error al usuario:
+
+**Ejemplo incorrecto:**
+
+```typescript
+// ❌ Expone información sensible
+catch (error) {
+  throw new Error(`Database error: ${error.message}`);
+}
+```
+
+**Ejemplo correcto:**
+
+```typescript
+// ✅ Generic message to user, details in logs
+catch (error) {
+  console.error('Internal error:', error); // Only in development/logs
+  throw new Error('Could not process the request. Please try again.');
+}
+```
+
+**In components:**
+
+```tsx
+function DataComponent() {
+  const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    fetchData()
+      .catch((err) => {
+        // Detailed log for development
+        if (import.meta.env.DEV) {
+          console.error('Detailed error:', err);
+        }
+        // Generic message to user (translated via i18n)
+        setError(t('errors.dataLoadFailed'));
+      });
+  }, []);
+
+  if (error) {
+    return <Alert color="red">{error}</Alert>;
+  }
+
+  // ...
+}
+```
+
+### Content Security Policy (CSP)
+
+Configurar CSP en el HTML principal:
+
+**Ejemplo en index.html:**
+
+```html
+<meta
+  http-equiv="Content-Security-Policy"
+  content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
+/>
+```
+
+### Dependencias y Vulnerabilidades
+
+- Ejecutar `npm audit` regularmente
+- Mantener dependencias actualizadas
+- Revisar changelogs antes de actualizar
+- Usar `npm audit fix` para vulnerabilidades conocidas
+
+**Comandos útiles:**
+
+```bash
+# Check for vulnerabilities
+npm audit
+
+# Try to fix automatically
+npm audit fix
+
+# Check for available updates
+npm outdated
+```
+
+### Validación de URLs y Redirecciones
+
+Siempre validar URLs antes de redirigir:
+
+**Ejemplo correcto:**
+
+```typescript
+function isValidUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    // Only allow URLs from same origin or whitelist
+    const allowedOrigins = [
+      window.location.origin,
+      'https://trusted-domain.com',
+    ];
+    return allowedOrigins.includes(parsed.origin);
+  } catch {
+    return false;
+  }
+}
+
+function handleRedirect(url: string) {
+  if (isValidUrl(url)) {
+    window.location.href = url;
+  } else {
+    console.error('Invalid or not allowed URL');
+  }
+}
+```
+
+### Protección de Rutas
+
+Validar autenticación antes de renderizar rutas protegidas:
+
+**Ejemplo correcto:**
+
+```tsx
+import { Navigate } from 'react-router-dom';
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = authService.isTokenValid();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+// Uso
+<Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  }
+/>
+```
+
+## Security Checklist
+
+Before considering a feature complete, verify:
+
+- [ ] No hardcoded secrets in code
+- [ ] Environment variables configured correctly
+- [ ] Input validation implemented
+- [ ] Output sanitization when necessary
+- [ ] Authentication tokens handled securely
+- [ ] Security headers in HTTP requests
+- [ ] Error messages don't expose sensitive information
+- [ ] Protected routes require authentication
+- [ ] URLs validated before redirects
+- [ ] Dependencies updated and no known vulnerabilities
+- [ ] Code, comments, and variable names in English

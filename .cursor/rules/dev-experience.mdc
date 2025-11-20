@@ -1,0 +1,554 @@
+# Reglas de Experiencia de Desarrollo
+
+Este archivo define las reglas y estándares para mejorar la experiencia de desarrollo, estructura de código y uso de herramientas.
+
+## Idioma del Código
+
+**IMPORTANTE**: El idioma principal del código, comentarios, nombres de variables, funciones, tipos, interfaces y toda la documentación técnica será **inglés**. Esto incluye:
+
+- Nombres de variables, funciones, componentes y tipos
+- Comentarios en el código
+- Mensajes de error en el código (no en la UI)
+- Nombres de archivos y carpetas
+- Mensajes de commit (aunque pueden tener descripciones en otros idiomas)
+
+Las traducciones para la interfaz de usuario (i18n) pueden incluir múltiples idiomas, pero el código fuente siempre estará en inglés.
+
+## Principios Generales
+
+1. **Consistencia**: Mantener patrones consistentes en todo el código
+2. **Legibilidad**: El código debe ser fácil de leer y entender
+3. **Mantenibilidad**: Estructura que facilite cambios futuros
+4. **Type Safety**: Aprovechar TypeScript al máximo
+5. **Developer Experience**: Herramientas y configuraciones que mejoren la productividad
+6. **Idioma inglés**: Todo el código fuente debe estar en inglés
+
+## Reglas Específicas
+
+### Estructura de Carpetas
+
+Seguir la estructura establecida del proyecto:
+
+```
+src/
+├── features/          # Features organizadas por dominio
+│   └── dashboard/
+│       ├── components/
+│       ├── hooks/
+│       ├── services/
+│       └── index.ts   # Barrel export
+├── layout/            # Componentes de layout compartidos
+│   ├── components/
+│   └── types/
+├── shared/            # Código compartido entre features
+│   ├── components/    # Componentes reutilizables
+│   ├── hooks/         # Hooks compartidos
+│   └── utils/         # Utilidades
+├── i18n/              # Configuración de internacionalización
+└── assets/            # Recursos estáticos
+```
+
+**Principios:**
+- Cada feature debe ser auto-contenida
+- Usar barrel exports (`index.ts`) para exports públicos
+- Separar concerns: componentes, lógica, servicios
+
+**Ejemplo de estructura de feature:**
+
+```
+features/
+└── users/
+    ├── components/
+    │   ├── UserList.tsx
+    │   └── UserForm.tsx
+    ├── hooks/
+    │   ├── useUsers.ts
+    │   └── useUserForm.ts
+    ├── services/
+    │   └── userService.ts
+    ├── types/
+    │   └── user.types.ts
+    └── index.ts        # export * from './components'; export * from './hooks';
+```
+
+### TypeScript
+
+#### Tipado Estricto
+
+Siempre usar tipos explícitos, evitar `any`:
+
+**Ejemplo correcto:**
+
+```typescript
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+}
+
+function getUser(id: string): Promise<User> {
+  return fetch(`/api/users/${id}`).then(res => res.json());
+}
+```
+
+**Ejemplo incorrecto:**
+
+```typescript
+// ❌ Evitar any
+function getUser(id: any): Promise<any> {
+  return fetch(`/api/users/${id}`).then(res => res.json());
+}
+```
+
+#### Tipos vs Interfaces
+
+- Usar `interface` para objetos y contratos de componentes
+- Usar `type` para uniones, intersecciones y tipos derivados
+
+**Ejemplo:**
+
+```typescript
+// Interface para objetos
+interface MenuItem {
+  id: string;
+  label: string;
+  path?: string;
+}
+
+// Type para uniones
+type Status = 'loading' | 'success' | 'error';
+
+// Type para tipos derivados
+type MenuItemWithIcon = MenuItem & {
+  icon: React.ComponentType;
+};
+```
+
+#### Tipos de Props de Componentes
+
+Siempre tipar props de componentes:
+
+**Ejemplo correcto:**
+
+```typescript
+interface ButtonProps {
+  label: string;
+  onClick: () => void;
+  variant?: 'primary' | 'secondary';
+  disabled?: boolean;
+}
+
+export function Button({ label, onClick, variant = 'primary', disabled }: ButtonProps) {
+  // ...
+}
+```
+
+#### Tipos de Hooks
+
+Tipar valores de retorno de hooks:
+
+**Ejemplo correcto:**
+
+```typescript
+interface UseDashboardDataReturn {
+  data: DashboardData | null;
+  loading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
+}
+
+export function useDashboardData(): UseDashboardDataReturn {
+  // ...
+}
+```
+
+### Nomenclatura
+
+#### Variables y Funciones
+
+- **camelCase** para variables y funciones
+- Nombres descriptivos y específicos
+- Evitar abreviaciones innecesarias
+
+**Ejemplo correcto:**
+
+```typescript
+const userDashboardData = fetchUserData();
+const isLoading = true;
+const hasError = false;
+
+function calculateTotalPrice(items: CartItem[]): number {
+  // ...
+}
+```
+
+**Ejemplo incorrecto:**
+
+```typescript
+// ❌ Nombres poco descriptivos
+const ud = fetchUD();
+const ld = true;
+const calc = (i) => { /* ... */ };
+```
+
+#### Componentes
+
+- **PascalCase** para componentes
+- Nombres que describan su propósito
+
+**Ejemplo:**
+
+```typescript
+// ✅ Descriptivo
+export function UserProfileCard() { }
+export function DashboardStatsGrid() { }
+
+// ❌ Genérico
+export function Card() { }
+export function Grid() { }
+```
+
+#### Constantes
+
+- **UPPER_SNAKE_CASE** para constantes globales
+- **camelCase** para constantes locales
+
+**Ejemplo:**
+
+```typescript
+// Constante global
+const MAX_RETRY_ATTEMPTS = 3;
+const API_BASE_URL = 'https://api.example.com';
+
+// Constante local
+const defaultPageSize = 10;
+```
+
+### Organización de Imports
+
+Ordenar imports de forma consistente:
+
+1. Librerías externas (React, Mantine, etc.)
+2. Imports internos absolutos (features, shared, layout)
+3. Imports relativos
+4. Tipos (pueden ir al final con `import type`)
+
+**Ejemplo correcto:**
+
+```typescript
+import { useState, useEffect } from 'react';
+import { Container, Card, Text } from '@mantine/core';
+import { IconUsers } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
+
+import { useDashboardData } from '../hooks/useDashboardData';
+import { dashboardService } from '../services/dashboardService';
+import type { DashboardData } from '../services/dashboardService';
+```
+
+### Hooks Personalizados
+
+#### Convenciones
+
+- Prefijo `use` obligatorio
+- Un hook = una responsabilidad
+- Retornar objetos con propiedades nombradas
+
+**Ejemplo correcto:**
+
+```typescript
+export function useDashboardData() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Lógica del hook
+
+  return { data, loading, error };
+}
+```
+
+#### Hooks Compartidos
+
+Colocar hooks reutilizables en `src/shared/hooks/`:
+
+```typescript
+// src/shared/hooks/useLocalStorage.ts
+export function useLocalStorage<T>(key: string, initialValue: T) {
+  // ...
+}
+```
+
+### Manejo de Estado
+
+#### Estado Local vs Global
+
+- **Estado local**: `useState` para estado del componente
+- **Estado compartido**: Context API o estado levantado
+- **Estado del servidor**: Hooks personalizados con fetch
+
+**Ejemplo de estado local:**
+
+```typescript
+function UserForm() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  // ...
+}
+```
+
+**Ejemplo de estado compartido:**
+
+```typescript
+// Context para tema, autenticación, etc.
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+```
+
+### Manejo de Efectos
+
+#### useEffect
+
+- Especificar dependencias correctamente
+- Limpiar efectos cuando sea necesario
+- Evitar efectos innecesarios
+
+**Ejemplo correcto:**
+
+```typescript
+useEffect(() => {
+  const controller = new AbortController();
+  
+  fetchData(controller.signal)
+    .then(setData)
+    .catch(setError);
+  
+  return () => {
+    controller.abort(); // Limpiar al desmontar
+  };
+}, [/* dependencias */]);
+```
+
+### Servicios y APIs
+
+#### Estructura de Servicios
+
+Organizar servicios por dominio en `features/[domain]/services/`:
+
+**Ejemplo:**
+
+```typescript
+// features/dashboard/services/dashboardService.ts
+export interface DashboardData {
+  stats: {
+    totalUsers: number;
+    totalRevenue: number;
+    totalOrders: number;
+    growthRate: number;
+  };
+  recentActivity: string[];
+}
+
+export const dashboardService = {
+  async getDashboardData(): Promise<DashboardData> {
+    const response = await fetch('/api/dashboard');
+    if (!response.ok) {
+      throw new Error('Failed to fetch dashboard data');
+    }
+    return response.json();
+  },
+};
+```
+
+#### Manejo de Errores en Servicios
+
+Siempre manejar errores apropiadamente:
+
+```typescript
+export const userService = {
+  async getUser(id: string): Promise<User> {
+    try {
+      const response = await fetch(`/api/users/${id}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('User not found');
+        }
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Unknown error while fetching user');
+    }
+  },
+};
+```
+
+### ESLint y Code Quality
+
+#### Seguir Reglas de ESLint
+
+El proyecto tiene ESLint configurado. Respetar las reglas:
+
+```bash
+# Check code
+npm run lint
+
+# Auto-fix when possible
+npm run lint -- --fix
+```
+
+#### Reglas Importantes
+
+- Usar `const` en lugar de `let` cuando sea posible
+- Preferir arrow functions para callbacks
+- No usar `var`
+- Preferir template literals sobre concatenación
+
+**Ejemplo correcto:**
+
+```typescript
+const items = data.map((item) => (
+  <Card key={item.id}>
+    {item.name}
+  </Card>
+));
+
+const message = `User ${user.name} has been created`;
+```
+
+### Git y Commits
+
+#### Mensajes de Commit
+
+Seguir Conventional Commits (el proyecto tiene commitlint):
+
+```
+feat: add UserProfile component
+fix: fix error in totals calculation
+docs: update README with installation instructions
+refactor: reorganize services structure
+test: add tests for useDashboardData
+chore: update dependencies
+```
+
+#### Branching
+
+- `main`: Production code
+- `develop`: Development code
+- `feature/feature-name`: New features
+- `fix/fix-name`: Bug fixes
+
+### Performance
+
+#### Optimizaciones Comunes
+
+- Usar `React.memo` para componentes que se re-renderizan frecuentemente
+- Usar `useMemo` para cálculos costosos
+- Usar `useCallback` para funciones pasadas como props
+
+**Ejemplo:**
+
+```typescript
+const expensiveValue = useMemo(() => {
+  return heavyCalculation(data);
+}, [data]);
+
+const handleClick = useCallback(() => {
+  doSomething(id);
+}, [id]);
+
+const MemoizedComponent = React.memo(function Component({ data }) {
+  return <ComplexVisualization data={data} />;
+});
+```
+
+#### Code Splitting
+
+Usar lazy loading para rutas:
+
+```typescript
+import { lazy, Suspense } from 'react';
+
+const Dashboard = lazy(() => import('./features/dashboard'));
+
+function App() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <Routes>
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Suspense>
+  );
+}
+```
+
+### Testing (Preparación)
+
+Aunque el proyecto no tiene tests configurados aún, preparar código testeable:
+
+- Separar lógica de presentación
+- Funciones puras cuando sea posible
+- Hooks y servicios fáciles de mockear
+
+**Ejemplo testeable:**
+
+```typescript
+// Separated logic - easy to test
+export function calculateTotal(items: CartItem[]): number {
+  return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+}
+
+// Component uses the logic
+function CartSummary({ items }: { items: CartItem[] }) {
+  const total = calculateTotal(items);
+  return <Text>Total: ${total}</Text>;
+}
+```
+
+## Herramientas de Desarrollo
+
+### Vite
+
+- Hot Module Replacement (HMR) automático
+- Fast refresh para React
+- Build optimizado para producción
+
+### TypeScript
+
+- Type checking estricto
+- Autocompletado mejorado
+- Refactoring seguro
+
+### ESLint
+
+- Linting automático
+- Reglas de React y TypeScript
+- Integración con editor
+
+## Development Checklist
+
+Before considering code complete, verify:
+
+- [ ] Correct TypeScript types (no `any`)
+- [ ] Imports organized correctly
+- [ ] Consistent naming
+- [ ] Folder structure respected
+- [ ] ESLint without errors
+- [ ] Readable and well-organized code
+- [ ] Error handling implemented
+- [ ] Performance considered (memo, useMemo, useCallback when necessary)
+- [ ] Code, comments, and variable names in English

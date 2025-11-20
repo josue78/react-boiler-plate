@@ -1,0 +1,288 @@
+# Reglas de Documentación
+
+Este archivo define las reglas y estándares para documentar código, componentes, hooks, servicios y APIs en el proyecto.
+
+## Idioma del Código
+
+**IMPORTANTE**: El idioma principal del código, comentarios, nombres de variables, funciones, tipos, interfaces y documentación técnica (JSDoc) será **inglés**. Esto incluye:
+
+- Nombres de variables, funciones, componentes y tipos
+- Comentarios en el código
+- Documentación JSDoc
+- Mensajes de error en el código (no en la UI)
+- Nombres de archivos y carpetas
+
+Las traducciones para la interfaz de usuario (i18n) pueden incluir múltiples idiomas, pero el código fuente siempre estará en inglés.
+
+## Principios Generales
+
+1. **Documentación como código**: La documentación debe vivir junto al código, no en documentos separados
+2. **Claridad sobre completitud**: Es mejor documentar bien lo esencial que documentar todo superficialmente
+3. **Ejemplos prácticos**: Incluir ejemplos de uso real cuando sea relevante
+4. **Mantenibilidad**: La documentación debe actualizarse cuando cambia el código
+5. **Idioma inglés**: Toda la documentación técnica debe estar en inglés
+
+## Reglas Específicas
+
+### Componentes React
+
+Todos los componentes deben incluir:
+- Descripción JSDoc del propósito del componente
+- Documentación de props con tipos TypeScript
+- Ejemplos de uso cuando el componente es complejo o reutilizable
+
+**Ejemplo correcto:**
+
+```typescript
+/**
+ * AppShell is the main container component that provides
+ * the layout structure with navbar, header and main content area.
+ * 
+ * @example
+ * ```tsx
+ * <AppShell menuItems={menuItems}>
+ *   <Routes>
+ *     <Route path="/" element={<Dashboard />} />
+ *   </Routes>
+ * </AppShell>
+ * ```
+ */
+interface AppShellProps {
+  /** Child elements that will be rendered in the main area */
+  children: React.ReactNode;
+  /** Array of menu items for navigation */
+  menuItems: MenuItem[];
+}
+
+export function AppShell({ children, menuItems }: AppShellProps) {
+  // ...
+}
+```
+
+**Ejemplo incorrecto:**
+
+```typescript
+// Shell component
+export function AppShell({ children, menuItems }) {
+  // ...
+}
+```
+
+### Hooks Personalizados
+
+Los hooks deben documentar:
+- Propósito y comportamiento del hook
+- Parámetros de entrada (si los tiene)
+- Valores de retorno y su estructura
+- Efectos secundarios o dependencias importantes
+- Ejemplos de uso
+
+**Ejemplo correcto:**
+
+```typescript
+/**
+ * Custom hook to fetch dashboard data.
+ * 
+ * Automatically handles loading state, data, and errors.
+ * Data is loaded automatically when the component mounts.
+ * 
+ * @returns Object with:
+ *   - `data`: Dashboard data or `null` if not yet loaded
+ *   - `loading`: Loading state (true while fetching data)
+ *   - `error`: Error message or `null` if no error
+ * 
+ * @example
+ * ```tsx
+ * function Dashboard() {
+ *   const { data, loading, error } = useDashboardData();
+ *   
+ *   if (loading) return <Loader />;
+ *   if (error) return <Alert>{error}</Alert>;
+ *   
+ *   return <DashboardContent data={data} />;
+ * }
+ * ```
+ */
+export function useDashboardData() {
+  // ...
+}
+```
+
+### Servicios y APIs
+
+Los servicios deben documentar:
+- Propósito del servicio
+- Métodos públicos disponibles
+- Tipos de datos de entrada y salida
+- Manejo de errores
+- Ejemplos de uso
+
+**Ejemplo correcto:**
+
+```typescript
+/**
+ * Service to interact with the dashboard API.
+ * 
+ * Provides methods to fetch dashboard data and
+ * handles communication with the backend.
+ */
+export const dashboardService = {
+  /**
+   * Fetches all dashboard data.
+   * 
+   * @returns Promise that resolves with dashboard data
+   * @throws {Error} If the request fails or data is invalid
+   * 
+   * @example
+   * ```tsx
+   * try {
+   *   const data = await dashboardService.getDashboardData();
+   *   console.log(data.stats);
+   * } catch (error) {
+   *   console.error('Error:', error);
+   * }
+   * ```
+   */
+  async getDashboardData(): Promise<DashboardData> {
+    // ...
+  },
+};
+```
+
+### Tipos TypeScript
+
+Los tipos complejos deben incluir:
+- Descripción del propósito
+- Documentación de cada propiedad importante
+- Ejemplos de valores válidos cuando sea relevante
+
+**Ejemplo correcto:**
+
+```typescript
+/**
+ * Represents a navigation menu item.
+ * 
+ * Can be a simple item with a path or a parent item
+ * with child elements (submenu).
+ */
+export interface MenuItem {
+  /** Unique identifier for the item */
+  id: string;
+  /** Text to display in the menu (must be a translation key) */
+  label: string;
+  /** Tabler Icons icon component */
+  icon?: React.ComponentType<{ size?: number }>;
+  /** Navigation path (required if no children) */
+  path?: string;
+  /** Child items to create a submenu */
+  children?: MenuItem[];
+}
+```
+
+### Funciones Utilitarias
+
+Las funciones en `src/shared/utils/` deben documentar:
+- Propósito de la función
+- Parámetros y tipos
+- Valor de retorno
+- Casos de uso comunes
+- Ejemplos prácticos
+
+**Ejemplo correcto:**
+
+```typescript
+/**
+ * Formats a number as currency in the specified format.
+ * 
+ * @param amount - Numeric amount to format
+ * @param currency - Currency code (ISO 4217), defaults to 'USD'
+ * @param locale - Locale for formatting, defaults to 'en-US'
+ * @returns String formatted as currency
+ * 
+ * @example
+ * ```tsx
+ * formatCurrency(1234.56) // "$1,234.56"
+ * formatCurrency(1234.56, 'EUR', 'es-ES') // "1.234,56 €"
+ * ```
+ */
+export function formatCurrency(
+  amount: number,
+  currency: string = 'USD',
+  locale: string = 'en-US'
+): string {
+  // ...
+}
+```
+
+### Comentarios en el Código
+
+- **Evitar comentarios obvios**: El código debe ser autoexplicativo
+- **Explicar el "por qué"**, no el "qué"
+- **Documentar decisiones de diseño** complejas o no obvias
+- **Mantener comentarios actualizados** cuando cambia el código
+
+**Ejemplo correcto:**
+
+```typescript
+// We use useMemo here because menuItems calculation is expensive
+// and should only recalculate when language changes
+const menuItems = useMemo(() => {
+  return buildMenuItems(t);
+}, [t]);
+```
+
+**Ejemplo incorrecto:**
+
+```typescript
+// Increments the counter
+setCount(count + 1);
+```
+
+### README de Features
+
+Cada feature compleja en `src/features/` debe tener un README.md que documente:
+- Propósito de la feature
+- Componentes principales
+- Hooks disponibles
+- Servicios y APIs utilizadas
+- Ejemplos de integración
+
+**Estructura sugerida:**
+
+```markdown
+# Feature: Dashboard
+
+## Description
+Feature that displays system statistics and recent activity.
+
+## Components
+- `DashboardDemo`: Main component that renders statistics cards
+
+## Hooks
+- `useDashboardData`: Hook to fetch and manage dashboard data state
+
+## Services
+- `dashboardService`: Service to communicate with the dashboard API
+
+## Usage
+```tsx
+import { DashboardDemo } from './features/dashboard';
+
+<Route path="/dashboard" element={<DashboardDemo />} />
+```
+```
+
+## Convenciones de Nomenclatura
+
+- **Componentes**: PascalCase descriptivo (`DashboardDemo`, `UserProfileCard`)
+- **Hooks**: camelCase con prefijo `use` (`useDashboardData`, `useTour`)
+- **Servicios**: camelCase con sufijo `Service` (`dashboardService`, `userService`)
+- **Utilidades**: camelCase descriptivo (`formatCurrency`, `validateEmail`)
+- **Tipos**: PascalCase descriptivo (`MenuItem`, `DashboardData`)
+
+## Herramientas de Documentación
+
+- **JSDoc**: Para documentar funciones, componentes y tipos
+- **TypeScript**: Los tipos son documentación en sí mismos
+- **README.md**: Para documentar features complejas o módulos completos
+- **Comentarios inline**: Solo cuando es necesario explicar lógica compleja
