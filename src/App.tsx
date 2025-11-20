@@ -11,12 +11,14 @@ import { useTranslation } from "react-i18next";
 import { AppShell } from "./layout/components/AppShell";
 import { DashboardDemo } from "./features/dashboard";
 import { UserList, UserForm } from "./features/users";
+import { PresentationDemo } from "./features/presentation";
 import {
   IconLayoutDashboard,
   IconUsers,
   IconSettings,
   IconUser,
   IconShield,
+  IconPresentation,
 } from "@tabler/icons-react";
 import type { MenuItem } from "./layout/types/menu.types";
 
@@ -127,6 +129,12 @@ function AppContent() {
       ],
     },
     {
+      id: "presentation",
+      label: t("menu.presentation"),
+      icon: IconPresentation,
+      path: "/presentation",
+    },
+    {
       id: "settings",
       label: t("menu.settings"),
       icon: IconSettings,
@@ -148,22 +156,33 @@ function AppContent() {
   ];
 
   return (
-    <AppShell menuItems={menuItems}>
-      <Routes>
-        <Route path="/" element={<DashboardDemo />} />
-        <Route path="/users" element={<UserListPage />} />
-        <Route path="/users/create" element={<UserCreatePage />} />
-        <Route path="/users/:id/edit" element={<UserEditPage />} />
-        <Route
-          path="/settings/profile"
-          element={<div>{t("menu.profile")}</div>}
-        />
-        <Route
-          path="/settings/security"
-          element={<div>{t("menu.security")}</div>}
-        />
-      </Routes>
-    </AppShell>
+    <Routes>
+      <Route
+        path="/presentation"
+        element={<PresentationDemo />}
+      />
+      <Route
+        path="/*"
+        element={
+          <AppShell menuItems={menuItems}>
+            <Routes>
+              <Route path="/" element={<DashboardDemo />} />
+              <Route path="/users" element={<UserListPage />} />
+              <Route path="/users/create" element={<UserCreatePage />} />
+              <Route path="/users/:id/edit" element={<UserEditPage />} />
+              <Route
+                path="/settings/profile"
+                element={<div>{t("menu.profile")}</div>}
+              />
+              <Route
+                path="/settings/security"
+                element={<div>{t("menu.security")}</div>}
+              />
+            </Routes>
+          </AppShell>
+        }
+      />
+    </Routes>
   );
 }
 

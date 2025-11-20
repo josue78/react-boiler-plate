@@ -4,6 +4,7 @@
     "users": "Gestión de Usuarios",
     "usersList": "Lista de Usuarios",
     "usersCreate": "Crear Usuario",
+    "presentation": "Presentación del Template",
     "settings": "Configuración",
     "profile": "Perfil",
     "security": "Seguridad"
@@ -12,6 +13,12 @@
     "title": "Dashboard",
     "startTour": "Iniciar tour guiado",
     "startTourAria": "Iniciar tour"
+  },
+  "sidebar": {
+    "close": "Cerrar menú lateral",
+    "closeAria": "Cerrar menú lateral",
+    "open": "Abrir menú lateral",
+    "openAria": "Abrir menú lateral"
   },
   "dashboard": {
     "title": "Dashboard Demo",
@@ -111,6 +118,91 @@
       "emailRequired": "El correo es requerido",
       "emailInvalid": "Formato de correo inválido"
     }
+  },
+  "presentation": {
+    "hero": {
+      "title": "React Boiler Plate",
+      "subtitle": "Un template completo y listo para producción para construir aplicaciones React modernas con TypeScript, Vite y mejores prácticas.",
+      "startButton": "Iniciar Presentación"
+    },
+    "summary": {
+      "title": "Resumen",
+      "technologies": "Tecnologías",
+      "features": "Características Clave",
+      "languages": "Idiomas",
+      "coverage": "Cobertura de Código",
+      "techDescription": "El template incluye 15+ tecnologías modernas incluyendo React 19, TypeScript, Vite, Mantine UI, React Router, i18next, ESLint, Husky y más. Todas configuradas y listas para usar.",
+      "featuresDescription": "8 características principales: desarrollo rápido con Vite, TypeScript estricto, UI moderna con Mantine, temas claro/oscuro, i18n completo, routing avanzado, calidad de código y arquitectura escalable.",
+      "languagesDescription": "Soporte completo para múltiples idiomas. Incluye inglés (idioma principal) y español. Fácil de extender para agregar más idiomas usando i18next.",
+      "coverageDescription": "90% de cobertura de código requerida. El proyecto incluye configuración de testing con Vitest, reglas de pre-commit y validación automática de cobertura."
+    },
+    "techStack": {
+      "title": "Stack Tecnológico",
+      "subtitle": "Herramientas y librerías modernas para construir aplicaciones excepcionales",
+      "categories": {
+        "frontend": "Frontend",
+        "devtools": "Herramientas",
+        "ui": "Librería UI",
+        "i18n": "i18n",
+        "testing": "Testing"
+      },
+      "descriptions": {
+        "react19Description": "React 19.2.0 - La última versión de la popular librería JavaScript para construir interfaces de usuario. Incluye nuevas características como batching automático, renderizado concurrente mejorado y mejor experiencia de desarrollo.",
+        "typescriptDescription": "TypeScript 5.9.3 - Un lenguaje de programación fuertemente tipado que se basa en JavaScript. Proporciona verificación de tipos estática, mejor soporte de IDE y mayor mantenibilidad del código. Configurado con modo estricto habilitado.",
+        "viteDescription": "Vite 7.2.2 - Herramienta de construcción frontend de próxima generación que proporciona inicio ultrarrápido del servidor de desarrollo y Hot Module Replacement (HMR). Optimizado para builds de producción con code splitting automático.",
+        "mantineDescription": "Mantine UI 8.3.8 - Una librería completa de componentes React con más de 100 componentes personalizables. Incluye soporte para modo oscuro, características de accesibilidad y un sistema de temas completo.",
+        "reactRouterDescription": "React Router 7.9.6 - Enrutamiento declarativo para aplicaciones React. Soporta rutas anidadas, code splitting y patrones de navegación avanzados. Configurado con BrowserRouter para enrutamiento del lado del cliente.",
+        "i18nextDescription": "i18next 25.6.3 - Framework poderoso de internacionalización para JavaScript. Soporta múltiples idiomas, detección automática de idioma y gestión de traducciones. Integrado con react-i18next para componentes React.",
+        "framerMotionDescription": "Framer Motion 12.23.24 - Librería de animaciones lista para producción para React. Proporciona animaciones declarativas, soporte de gestos y animaciones de layout. Usado para transiciones suaves y animaciones interactivas.",
+        "vitestDescription": "Vitest 4.0.10 - Framework de pruebas unitarias rápido impulsado por Vite. Proporciona API compatible con Jest, soporte nativo ESM e integración excelente con TypeScript. Configurado con umbral de cobertura del 90%.",
+        "eslintDescription": "ESLint 9.39.1 - Linter de JavaScript con plugins que ayuda a identificar y corregir problemas en el código. Configurado con reglas de TypeScript y React para mantener la calidad y consistencia del código.",
+        "huskyDescription": "Husky 9.1.7 - Git hooks simplificados. Ejecuta automáticamente linting, testing y otras verificaciones antes de los commits. Asegura que se mantengan los estándares de calidad de código en todo el equipo.",
+        "commitlintDescription": "Commitlint 20.1.0 - Lint de mensajes de commit según la especificación Conventional Commits. Asegura un formato consistente de mensajes de commit (feat:, fix:, docs:, etc.) para mejor historial del proyecto.",
+        "mswDescription": "MSW 2.12.2 - Mock Service Worker para simulación de API en pruebas y desarrollo. Intercepta solicitudes de red y devuelve respuestas simuladas, permitiendo pruebas confiables sin dependencias del backend."
+      }
+    },
+    "architecture": {
+      "title": "Arquitectura",
+      "subtitle": "Arquitectura basada en features para código escalable y mantenible",
+      "features": "Features",
+      "featuresDesc": "Módulos específicos por dominio organizados por feature",
+      "layout": "Layout",
+      "layoutDesc": "Componentes de layout y navegación compartidos",
+      "shared": "Compartido",
+      "sharedDesc": "Componentes, hooks y utilidades reutilizables",
+      "i18n": "Internacionalización",
+      "i18nDesc": "Soporte multi-idioma con i18next"
+    },
+    "features": {
+      "title": "Características Clave",
+      "subtitle": "Todo lo que necesitas para construir aplicaciones React modernas",
+      "categories": {
+        "development": "Desarrollo",
+        "uiux": "UI/UX",
+        "i18n": "Internacionalización",
+        "quality": "Calidad de Código"
+      }
+    },
+    "structure": {
+      "title": "Estructura del Proyecto",
+      "subtitle": "Estructura de carpetas organizada y escalable",
+      "treeTitle": "Árbol de Directorios",
+      "exampleTitle": "Ejemplo de Feature",
+      "description": "Cada feature es auto-contenida con sus propios componentes, hooks y servicios"
+    },
+    "standards": {
+      "title": "Estándares de Código",
+      "subtitle": "Mejores prácticas y convenciones para código consistente"
+    },
+    "cta": {
+      "title": "¿Listo para Empezar?",
+      "subtitle": "Comienza a construir tu próxima increíble aplicación React con nuestro template completo",
+      "getStarted": "Comenzar",
+      "documentation": "Documentación",
+      "footer": "Construido con ❤️ usando React, TypeScript y Vite"
+    },
+    "enterFullscreen": "Entrar a pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa"
   }
 }
 

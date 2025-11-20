@@ -1,1 +1,6 @@
+# Run linter
 npm run lint
+
+# Run tests with coverage
+# The --passWithNoTests flag allows vitest to pass even when no tests are found
+npm run test:coverage:check

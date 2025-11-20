@@ -4,6 +4,7 @@
     "users": "User Management",
     "usersList": "Users List",
     "usersCreate": "Create User",
+    "presentation": "Template Presentation",
     "settings": "Settings",
     "profile": "Profile",
     "security": "Security"
@@ -12,6 +13,12 @@
     "title": "Dashboard",
     "startTour": "Start guided tour",
     "startTourAria": "Start tour"
+  },
+  "sidebar": {
+    "close": "Close sidebar",
+    "closeAria": "Close sidebar",
+    "open": "Open sidebar",
+    "openAria": "Open sidebar"
   },
   "dashboard": {
     "title": "Dashboard Demo",
@@ -111,6 +118,91 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Invalid email format"
     }
+  },
+  "presentation": {
+    "hero": {
+      "title": "React Boiler Plate",
+      "subtitle": "A complete, production-ready template for building modern React applications with TypeScript, Vite, and best practices.",
+      "startButton": "Start Presentation"
+    },
+    "summary": {
+      "title": "Resumen",
+      "technologies": "Technologies",
+      "features": "Key Features",
+      "languages": "Languages",
+      "coverage": "Code Coverage",
+      "techDescription": "The template includes 15+ modern technologies including React 19, TypeScript, Vite, Mantine UI, React Router, i18next, ESLint, Husky and more. All configured and ready to use.",
+      "featuresDescription": "8 main features: fast development with Vite, strict TypeScript, modern UI with Mantine, light/dark themes, complete i18n, advanced routing, code quality and scalable architecture.",
+      "languagesDescription": "Complete support for multiple languages. Includes English (primary language) and Spanish. Easy to extend to add more languages using i18next.",
+      "coverageDescription": "90% code coverage required. The project includes testing configuration with Vitest, pre-commit rules and automatic coverage validation."
+    },
+    "techStack": {
+      "title": "Technology Stack",
+      "subtitle": "Modern tools and libraries for building exceptional applications",
+      "categories": {
+        "frontend": "Frontend",
+        "devtools": "Dev Tools",
+        "ui": "UI Library",
+        "i18n": "i18n",
+        "testing": "Testing"
+      },
+      "descriptions": {
+        "react19Description": "React 19.2.0 - The latest version of the popular JavaScript library for building user interfaces. Includes new features like automatic batching, improved concurrent rendering, and better developer experience.",
+        "typescriptDescription": "TypeScript 5.9.3 - A strongly typed programming language that builds on JavaScript. Provides static type checking, better IDE support, and improved code maintainability. Configured with strict mode enabled.",
+        "viteDescription": "Vite 7.2.2 - Next-generation frontend build tool that provides lightning-fast development server startup and Hot Module Replacement (HMR). Optimized for production builds with automatic code splitting.",
+        "mantineDescription": "Mantine UI 8.3.8 - A fully featured React components library with 100+ customizable components. Includes dark mode support, accessibility features, and a comprehensive theming system.",
+        "reactRouterDescription": "React Router 7.9.6 - Declarative routing for React applications. Supports nested routes, code splitting, and advanced navigation patterns. Configured with BrowserRouter for client-side routing.",
+        "i18nextDescription": "i18next 25.6.3 - Powerful internationalization framework for JavaScript. Supports multiple languages, automatic language detection, and translation management. Integrated with react-i18next for React components.",
+        "framerMotionDescription": "Framer Motion 12.23.24 - Production-ready motion library for React. Provides declarative animations, gesture support, and layout animations. Used for smooth transitions and interactive animations.",
+        "vitestDescription": "Vitest 4.0.10 - Fast unit test framework powered by Vite. Provides Jest-compatible API, native ESM support, and excellent TypeScript integration. Configured with 90% coverage threshold.",
+        "eslintDescription": "ESLint 9.39.1 - Pluggable JavaScript linter that helps identify and fix problems in code. Configured with TypeScript and React rules to maintain code quality and consistency.",
+        "huskyDescription": "Husky 9.1.7 - Git hooks made easy. Automatically runs linting, testing, and other checks before commits. Ensures code quality standards are maintained across the team.",
+        "commitlintDescription": "Commitlint 20.1.0 - Lint commit messages according to Conventional Commits specification. Ensures consistent commit message format (feat:, fix:, docs:, etc.) for better project history.",
+        "mswDescription": "MSW 2.12.2 - Mock Service Worker for API mocking in tests and development. Intercepts network requests and returns mock responses, enabling reliable testing without backend dependencies."
+      }
+    },
+    "architecture": {
+      "title": "Architecture",
+      "subtitle": "Feature-based architecture for scalable and maintainable code",
+      "features": "Features",
+      "featuresDesc": "Domain-specific modules organized by feature",
+      "layout": "Layout",
+      "layoutDesc": "Shared layout components and navigation",
+      "shared": "Shared",
+      "sharedDesc": "Reusable components, hooks, and utilities",
+      "i18n": "Internationalization",
+      "i18nDesc": "Multi-language support with i18next"
+    },
+    "features": {
+      "title": "Key Features",
+      "subtitle": "Everything you need to build modern React applications",
+      "categories": {
+        "development": "Development",
+        "uiux": "UI/UX",
+        "i18n": "Internationalization",
+        "quality": "Code Quality"
+      }
+    },
+    "structure": {
+      "title": "Project Structure",
+      "subtitle": "Organized and scalable folder structure",
+      "treeTitle": "Directory Tree",
+      "exampleTitle": "Feature Example",
+      "description": "Each feature is self-contained with its own components, hooks, and services"
+    },
+    "standards": {
+      "title": "Code Standards",
+      "subtitle": "Best practices and conventions for consistent code"
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "subtitle": "Start building your next amazing React application with our comprehensive template",
+      "getStarted": "Get Started",
+      "documentation": "Documentation",
+      "footer": "Built with ❤️ using React, TypeScript, and Vite"
+    },
+    "enterFullscreen": "Enter fullscreen",
+    "exitFullscreen": "Exit fullscreen"
   }
 }
 
