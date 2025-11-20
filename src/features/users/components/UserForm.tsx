@@ -46,24 +46,38 @@ export function UserForm({ userId, onSubmitSuccess, onCancel }: UserFormProps) {
   const { user, loading: loadingUser } = useUser(userId || '');
   const { loading, error, createUser, updateUser, clearError } = useUserForm();
 
-  const [formData, setFormData] = useState<UserFormData>({
-    name: '',
-    email: '',
-    role: 'user',
-    status: 'active',
-    avatar: null,
+  const [formData, setFormData] = useState<UserFormData>(() => {
+    if (user) {
+      return {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        avatar: user.avatar,
+      };
+    }
+    return {
+      name: '',
+      email: '',
+      role: 'user',
+      status: 'active',
+      avatar: null,
+    };
   });
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (user) {
-      setFormData({
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        status: user.status,
-        avatar: user.avatar,
+      // Use queueMicrotask to make state update asynchronous and avoid cascading renders
+      queueMicrotask(() => {
+        setFormData({
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          status: user.status,
+          avatar: user.avatar,
+        });
       });
     }
   }, [user]);

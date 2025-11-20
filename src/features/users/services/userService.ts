@@ -130,7 +130,7 @@ const mockUsers: User[] = [
 
 /**
  * Service to interact with the users API.
- * 
+ *
  * Provides methods to fetch, create, update, and delete users.
  * Currently uses mock data for development.
  */
@@ -255,9 +255,17 @@ export const userService = {
     // Simulate API call with delay
     return new Promise((resolve) => {
       setTimeout(() => {
+        // Generate new ID by finding the maximum existing ID and incrementing
+        // This prevents ID collisions when users are deleted
+        const maxId = mockUsers.reduce((max, user) => {
+          const userId = Number.parseInt(user.id, 10);
+          return !Number.isNaN(userId) && userId > max ? userId : max;
+        }, 0);
+        const newId = String(maxId + 1);
+
         const newUser: User = {
           ...userData,
-          id: String(mockUsers.length + 1),
+          id: newId,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
