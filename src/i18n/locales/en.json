@@ -46,7 +46,71 @@
   "common": {
     "error": "Error",
     "toggleColorScheme": "Toggle color scheme",
-    "toggleLanguage": "Toggle language"
+    "toggleLanguage": "Toggle language",
+    "loading": "Loading..."
+  },
+  "users": {
+    "title": "Users",
+    "list": {
+      "title": "Users List",
+      "viewTable": "Table",
+      "viewCards": "Cards",
+      "searchPlaceholder": "Search by name or email...",
+      "filteredResults": "Showing {{count}} of {{total}} users",
+      "noResults": "No users found matching the filters"
+    },
+    "details": {
+      "title": "User Details"
+    },
+    "form": {
+      "title": "Create User",
+      "editTitle": "Edit User"
+    },
+    "fields": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "avatar": "Avatar",
+      "avatarPlaceholder": "Avatar URL (optional)",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    },
+    "actions": {
+      "create": "Create User",
+      "view": "View Details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel",
+      "back": "Back to List",
+      "clearFilters": "Clear Filters"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending"
+    },
+    "roles": {
+      "admin": "Admin",
+      "user": "User",
+      "moderator": "Moderator"
+    },
+    "messages": {
+      "noUsers": "No users found",
+      "noResults": "No users found matching the filters",
+      "notFound": "User not found",
+      "createSuccess": "User created successfully",
+      "updateSuccess": "User updated successfully",
+      "deleteSuccess": "User deleted successfully",
+      "loadError": "Error loading users"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format"
+    }
   }
 }
 

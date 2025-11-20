@@ -5,10 +5,9 @@ import '@mantine/core/styles.css';
 import './index.css';
 import './i18n/config';
 import App from './App.tsx';
+import { appTheme } from './shared/config/theme';
 
-const theme = createTheme({
-  /** Put your mantine theme override here */
-});
+const theme = createTheme(appTheme);
 
 const colorSchemeManager = localStorageColorSchemeManager({ key: 'mantine-color-scheme' });
 

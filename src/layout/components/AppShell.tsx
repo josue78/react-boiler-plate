@@ -1,9 +1,10 @@
-import { AppShell as MantineAppShell, Text, Group, ActionIcon, Tooltip } from '@mantine/core';
+import { AppShell as MantineAppShell, Group, ActionIcon, Tooltip, Box } from '@mantine/core';
 import { IconHelp } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { Sidebar } from './Sidebar';
 import { ThemeToggle } from './ThemeToggle';
 import { LanguageToggle } from './LanguageToggle';
+import { Logo } from './Logo';
 import { useTour } from '../../shared/hooks/useTour';
 import type { MenuItem } from '../types/menu.types';
 
@@ -29,11 +30,19 @@ export function AppShell({ children, menuItems }: AppShellProps) {
       <MantineAppShell.Navbar>
         <Sidebar menuItems={menuItems} />
       </MantineAppShell.Navbar>
-      <MantineAppShell.Header p="md" data-tour="header">
-        <Group justify="space-between" h="100%">
-          <Text size="lg" fw={600}>
-            {t('header.title')}
-          </Text>
+      <MantineAppShell.Header p={0} data-tour="header">
+        {/* Accent bar at the top */}
+        <Box
+          style={(theme) => ({
+            height: '3px',
+            backgroundColor: theme.colors.primary[6],
+            width: '100%',
+          })}
+        />
+
+        {/* Header content */}
+        <Group justify="space-between" h="100%" p="md">
+          <Logo height={32} />
           <Group gap="xs">
             <Tooltip label={t('header.startTour')}>
               <ActionIcon

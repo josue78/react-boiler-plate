@@ -46,7 +46,71 @@
   "common": {
     "error": "Error",
     "toggleColorScheme": "Cambiar esquema de color",
-    "toggleLanguage": "Cambiar idioma"
+    "toggleLanguage": "Cambiar idioma",
+    "loading": "Cargando..."
+  },
+  "users": {
+    "title": "Usuarios",
+    "list": {
+      "title": "Lista de Usuarios",
+      "viewTable": "Tabla",
+      "viewCards": "Tarjetas",
+      "searchPlaceholder": "Buscar por nombre o correo...",
+      "filteredResults": "Mostrando {{count}} de {{total}} usuarios",
+      "noResults": "No se encontraron usuarios que coincidan con los filtros"
+    },
+    "details": {
+      "title": "Detalles de Usuario"
+    },
+    "form": {
+      "title": "Crear Usuario",
+      "editTitle": "Editar Usuario"
+    },
+    "fields": {
+      "id": "ID",
+      "name": "Nombre",
+      "email": "Correo",
+      "role": "Rol",
+      "status": "Estado",
+      "avatar": "Avatar",
+      "avatarPlaceholder": "URL del Avatar (opcional)",
+      "createdAt": "Creado el",
+      "updatedAt": "Actualizado el"
+    },
+    "actions": {
+      "create": "Crear Usuario",
+      "view": "Ver Detalles",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "back": "Volver a la Lista",
+      "clearFilters": "Limpiar Filtros"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "pending": "Pendiente"
+    },
+    "roles": {
+      "admin": "Administrador",
+      "user": "Usuario",
+      "moderator": "Moderador"
+    },
+    "messages": {
+      "noUsers": "No se encontraron usuarios",
+      "noResults": "No se encontraron usuarios que coincidan con los filtros",
+      "notFound": "Usuario no encontrado",
+      "createSuccess": "Usuario creado exitosamente",
+      "updateSuccess": "Usuario actualizado exitosamente",
+      "deleteSuccess": "Usuario eliminado exitosamente",
+      "loadError": "Error al cargar usuarios"
+    },
+    "validation": {
+      "nameRequired": "El nombre es requerido",
+      "emailRequired": "El correo es requerido",
+      "emailInvalid": "Formato de correo inválido"
+    }
   }
 }
 
