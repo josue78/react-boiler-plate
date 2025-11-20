@@ -1,6 +1,6 @@
 # React Boiler Plate
 
-Base project for web applications developed with React, TypeScript, and Vite. Includes a complete setup with UI components, routing, internationalization, and development tools.
+Base project for web applications developed with React, TypeScript, and Vite. Includes a complete setup with UI components, routing, internationalization, testing, and development tools.
 
 ## Description
 
@@ -10,10 +10,12 @@ This is a boilerplate project that provides a complete configuration to start de
 - **React Router** - Routing for single-page applications (SPA)
 - **i18next** - Internationalization (i18n) with support for multiple languages
 - **TypeScript** - Static typing for increased safety and productivity
+- **Vitest** - Fast unit testing framework with coverage reporting
 - **ESLint** - Linter configured with rules for React and TypeScript
 - **Husky** - Git hooks to automate tasks
 - **Commitlint** - Commit message validation following conventions
 - **Driver.js** - Library for creating guided tours in the application
+- **Framer Motion** - Animation library for React
 
 ## Prerequisites
 
@@ -98,22 +100,74 @@ Run the linter to check the code:
 npm run lint
 ```
 
+### Testing
+
+Run tests in watch mode:
+
+```bash
+npm run test
+```
+
+Run tests with UI:
+
+```bash
+npm run test:ui
+```
+
+Run tests once:
+
+```bash
+npm run test:run
+```
+
+Generate coverage report:
+
+```bash
+npm run test:coverage
+```
+
+Check coverage thresholds (90% minimum required):
+
+```bash
+npm run test:coverage:check
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
 ## Project Structure
 
 ```
 react-boiler-plate/
 ├── public/                    # Public static files
 │   └── vite.svg
+├── scripts/                   # Utility scripts
+│   └── check-coverage.js     # Coverage threshold checker
 ├── src/                       # Application source code
 │   ├── assets/                # Resources such as images, icons, etc.
 │   │   └── react.svg
 │   ├── components/            # Shared components
 │   │   └── DataGrid/         # Data table component
 │   ├── features/             # Features organized by domain
-│   │   └── dashboard/        # Dashboard feature
-│   │       ├── components/   # Feature-specific components
-│   │       ├── hooks/        # Feature-specific hooks
-│   │       ├── services/     # Feature services/API
+│   │   ├── dashboard/        # Dashboard feature
+│   │   │   ├── components/   # Feature-specific components
+│   │   │   ├── hooks/        # Feature-specific hooks
+│   │   │   ├── services/     # Feature services/API
+│   │   │   └── index.ts      # Barrel export
+│   │   ├── users/            # Users feature (CRUD example)
+│   │   │   ├── components/   # User components
+│   │   │   ├── hooks/        # User hooks
+│   │   │   ├── services/     # User services
+│   │   │   ├── types/        # User types
+│   │   │   └── index.ts      # Barrel export
+│   │   └── presentation/     # Presentation feature
+│   │       ├── components/  # Presentation components
+│   │       ├── hooks/        # Presentation hooks
+│   │       ├── styles/       # Presentation styles
+│   │       ├── types/        # Presentation types
 │   │       └── index.ts      # Barrel export
 │   ├── i18n/                 # Internationalization configuration
 │   │   ├── config.ts         # i18next configuration
@@ -124,6 +178,7 @@ react-boiler-plate/
 │   │   ├── components/       # Layout components
 │   │   │   ├── AppShell.tsx  # Main application shell
 │   │   │   ├── LanguageToggle.tsx  # Language selector
+│   │   │   ├── Logo.tsx      # Application logo
 │   │   │   ├── NavMenu.tsx   # Navigation menu
 │   │   │   ├── Sidebar.tsx   # Sidebar
 │   │   │   └── ThemeToggle.tsx  # Theme selector
@@ -132,10 +187,13 @@ react-boiler-plate/
 │   ├── shared/               # Code shared between features
 │   │   ├── components/       # Reusable components
 │   │   ├── config/           # Shared configurations
-│   │   │   └── env.ts        # Environment variables configuration
+│   │   │   ├── env.ts        # Environment variables configuration
+│   │   │   └── theme.ts      # Theme configuration
 │   │   ├── hooks/             # Shared hooks
 │   │   │   └── useTour.ts    # Hook for guided tours
 │   │   └── utils/            # Utilities
+│   ├── test/                  # Test configuration
+│   │   └── setup.ts          # Test setup file
 │   ├── App.tsx               # Main application component
 │   ├── App.css               # App component styles
 │   ├── main.tsx              # Application entry point
@@ -148,6 +206,7 @@ react-boiler-plate/
 ├── tsconfig.app.json         # TypeScript configuration for the app
 ├── tsconfig.node.json        # TypeScript configuration for Node
 ├── vite.config.ts            # Vite configuration
+├── vitest.config.ts          # Vitest configuration
 ├── eslint.config.js          # ESLint configuration
 └── README.md                 # This file
 ```
@@ -168,6 +227,7 @@ react-boiler-plate/
 - **i18next-browser-languagedetector** (^8.2.0) - Automatic language detection
 - **@tabler/icons-react** (^3.35.0) - Tabler React icons
 - **driver.js** (^1.4.0) - Library for creating guided tours
+- **framer-motion** (^12.23.24) - Animation library for React
 
 ### Development Dependencies
 
@@ -176,6 +236,14 @@ react-boiler-plate/
 - **Husky** (^9.1.7) - Git hooks to automate tasks
 - **Commitlint** (^20.1.0) - Commit message validation
 - **@vitejs/plugin-react** (^5.1.0) - Vite plugin for React
+- **Vitest** (^4.0.10) - Fast unit testing framework
+- **@vitest/ui** (^4.0.10) - Vitest UI interface
+- **@vitest/coverage-v8** (^4.0.10) - Coverage provider for Vitest
+- **@testing-library/react** (^16.3.0) - React testing utilities
+- **@testing-library/jest-dom** (^6.9.1) - Custom DOM matchers
+- **@testing-library/user-event** (^14.6.1) - User interaction simulation
+- **msw** (^2.12.2) - Mock Service Worker for API mocking
+- **jsdom** (^27.2.0) - DOM implementation for Node.js
 
 ## Features
 
@@ -194,6 +262,7 @@ react-boiler-plate/
 - 🌓 **Light/Dark theme** - Support for light and dark mode
 - 🗺️ **React Router** - Complete navigation with nested routes
 - 🎯 **Guided tours** - Driver.js integration for onboarding
+- ✨ **Animations** - Framer Motion for smooth animations
 
 ### Internationalization
 
@@ -201,6 +270,14 @@ react-boiler-plate/
 - 🔍 **Automatic detection** - Detects browser language
 - 💾 **Persistence** - Saves language preference in localStorage
 - 📝 **Supported languages** - Spanish (default) and English
+
+### Testing
+
+- ✅ **Vitest** - Fast unit testing framework
+- 📊 **Coverage reporting** - Code coverage with 90% minimum threshold
+- 🎭 **React Testing Library** - Component testing utilities
+- 🔄 **MSW** - API mocking for integration tests
+- 🖥️ **Test UI** - Interactive test interface
 
 ### Code Quality
 
@@ -216,11 +293,18 @@ The project follows a feature-based architecture, where each feature is an indep
 - **components/** - Feature-specific components
 - **hooks/** - Feature-specific custom hooks
 - **services/** - Business logic and API calls
+- **types/** - TypeScript types and interfaces (when applicable)
 - **index.ts** - Barrel export to facilitate imports
 
 Shared components and utilities are located in:
 - **shared/** - Reusable code between features
 - **layout/** - Structure and navigation components
+
+### Example Features
+
+- **dashboard** - Dashboard feature with statistics and activity
+- **users** - Complete CRUD example for user management
+- **presentation** - Presentation/demo feature with animations
 
 ## Environment Configuration
 
@@ -245,6 +329,43 @@ The project is configured with i18next to support multiple languages:
 To add a new language:
 1. Create a `[code].json` file in `src/i18n/locales/`
 2. Add the language code in `src/i18n/config.ts`
+
+## Testing
+
+The project includes a complete testing setup with Vitest:
+
+### Test Configuration
+
+- **Test environment**: jsdom (browser-like environment)
+- **Coverage threshold**: 90% minimum for statements, branches, functions, and lines
+- **Coverage reports**: Text, JSON, HTML, and LCOV formats
+- **Test setup**: `src/test/setup.ts` for global test configuration
+
+### Writing Tests
+
+Tests should follow the AAA pattern (Arrange-Act-Assert) and be co-located with source files:
+
+```
+src/
+├── features/
+│   └── users/
+│       ├── components/
+│       │   ├── UserList.tsx
+│       │   └── UserList.test.tsx
+│       ├── hooks/
+│       │   ├── useUsers.ts
+│       │   └── useUsers.test.ts
+```
+
+### Coverage Requirements
+
+The project enforces a **90% minimum code coverage** threshold. Coverage is checked automatically:
+
+- Before commits (via pre-commit hooks)
+- In CI/CD pipelines
+- Manually with `npm run test:coverage:check`
+
+Coverage reports are generated in the `coverage/` directory.
 
 ## Git Hooks
 
