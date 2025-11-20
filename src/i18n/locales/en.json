@@ -1,0 +1,52 @@
+{
+  "menu": {
+    "dashboard": "Dashboard",
+    "users": "User Management",
+    "usersList": "Users List",
+    "usersCreate": "Create User",
+    "settings": "Settings",
+    "profile": "Profile",
+    "security": "Security"
+  },
+  "header": {
+    "title": "Dashboard",
+    "startTour": "Start guided tour",
+    "startTourAria": "Start tour"
+  },
+  "dashboard": {
+    "title": "Dashboard Demo",
+    "totalUsers": "Total Users",
+    "totalRevenue": "Total Revenue",
+    "totalOrders": "Total Orders",
+    "growthRate": "Growth Rate",
+    "recentActivity": "Recent Activity"
+  },
+  "tour": {
+    "sidebar": {
+      "title": "Navigation Menu",
+      "description": "This is the main side menu. Here you can access all sections of the application, including Dashboard, User Management and Settings."
+    },
+    "header": {
+      "title": "Top Bar",
+      "description": "This is the top bar that displays the current section title. You will also find the button to switch between light and dark theme."
+    },
+    "themeToggle": {
+      "title": "Theme Toggle",
+      "description": "Click here to switch between the light and dark theme of the application."
+    },
+    "dashboardCards": {
+      "title": "Statistics Cards",
+      "description": "These cards show the main dashboard metrics, including total users, revenue, orders and growth rate."
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "description": "In this section you can see the most recent activities and events in the system."
+    }
+  },
+  "common": {
+    "error": "Error",
+    "toggleColorScheme": "Toggle color scheme",
+    "toggleLanguage": "Toggle language"
+  }
+}
+

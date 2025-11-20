@@ -1,0 +1,52 @@
+{
+  "menu": {
+    "dashboard": "Dashboard",
+    "users": "Gestión de Usuarios",
+    "usersList": "Lista de Usuarios",
+    "usersCreate": "Crear Usuario",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "security": "Seguridad"
+  },
+  "header": {
+    "title": "Dashboard",
+    "startTour": "Iniciar tour guiado",
+    "startTourAria": "Iniciar tour"
+  },
+  "dashboard": {
+    "title": "Dashboard Demo",
+    "totalUsers": "Total Usuarios",
+    "totalRevenue": "Ingresos Totales",
+    "totalOrders": "Total Órdenes",
+    "growthRate": "Tasa de Crecimiento",
+    "recentActivity": "Actividad Reciente"
+  },
+  "tour": {
+    "sidebar": {
+      "title": "Menú de Navegación",
+      "description": "Este es el menú lateral principal. Aquí puedes acceder a todas las secciones de la aplicación, incluyendo el Dashboard, Gestión de Usuarios y Configuración."
+    },
+    "header": {
+      "title": "Barra Superior",
+      "description": "Esta es la barra superior que muestra el título de la sección actual. También encontrarás el botón para cambiar entre tema claro y oscuro."
+    },
+    "themeToggle": {
+      "title": "Toggle de Tema",
+      "description": "Haz clic aquí para cambiar entre el tema claro y oscuro de la aplicación."
+    },
+    "dashboardCards": {
+      "title": "Tarjetas de Estadísticas",
+      "description": "Estas tarjetas muestran las métricas principales del dashboard, incluyendo usuarios totales, ingresos, órdenes y tasa de crecimiento."
+    },
+    "recentActivity": {
+      "title": "Actividad Reciente",
+      "description": "En esta sección puedes ver las actividades y eventos más recientes del sistema."
+    }
+  },
+  "common": {
+    "error": "Error",
+    "toggleColorScheme": "Cambiar esquema de color",
+    "toggleLanguage": "Cambiar idioma"
+  }
+}
+

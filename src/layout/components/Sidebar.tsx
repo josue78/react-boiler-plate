@@ -9,7 +9,7 @@ interface SidebarProps {
 export function Sidebar({ menuItems }: SidebarProps) {
   return (
     <ScrollArea h="100%">
-      <Box p="md">
+      <Box p="md" data-tour="sidebar">
         <NavMenu items={menuItems} />
       </Box>
     </ScrollArea>

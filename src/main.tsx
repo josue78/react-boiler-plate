@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { MantineProvider, createTheme, localStorageColorSchemeManager } from '@mantine/core';
 import '@mantine/core/styles.css';
 import './index.css';
+import './i18n/config';
 import App from './App.tsx';
 
 const theme = createTheme({

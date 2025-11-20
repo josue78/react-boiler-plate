@@ -1,9 +1,11 @@
 import { Container, Grid, Card, Text, Group, Stack, Loader, Alert } from '@mantine/core';
 import { IconUsers, IconCurrencyDollar, IconShoppingCart, IconTrendingUp } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { useDashboardData } from '../hooks/useDashboardData';
 
 export function DashboardDemo() {
   const { data, loading, error } = useDashboardData();
+  const { t } = useTranslation();
 
   if (loading) {
     return (
@@ -18,7 +20,7 @@ export function DashboardDemo() {
   if (error) {
     return (
       <Container size="xl" py="xl">
-        <Alert color="red" title="Error">
+        <Alert color="red" title={t('common.error')}>
           {error}
         </Alert>
       </Container>
@@ -33,25 +35,25 @@ export function DashboardDemo() {
 
   const statCards = [
     {
-      title: 'Total Usuarios',
+      title: t('dashboard.totalUsers'),
       value: stats.totalUsers.toLocaleString(),
       icon: IconUsers,
       color: 'blue',
     },
     {
-      title: 'Ingresos Totales',
+      title: t('dashboard.totalRevenue'),
       value: `$${stats.totalRevenue.toLocaleString()}`,
       icon: IconCurrencyDollar,
       color: 'green',
     },
     {
-      title: 'Total Órdenes',
+      title: t('dashboard.totalOrders'),
       value: stats.totalOrders.toLocaleString(),
       icon: IconShoppingCart,
       color: 'orange',
     },
     {
-      title: 'Tasa de Crecimiento',
+      title: t('dashboard.growthRate'),
       value: `${stats.growthRate}%`,
       icon: IconTrendingUp,
       color: 'violet',
@@ -62,10 +64,10 @@ export function DashboardDemo() {
     <Container size="xl" py="xl">
       <Stack gap="xl">
         <Text size="xl" fw={700}>
-          Dashboard Demo
+          {t('dashboard.title')}
         </Text>
 
-        <Grid>
+        <Grid data-tour="dashboard-cards">
           {statCards.map((stat) => {
             const IconComponent = stat.icon;
             return (
@@ -88,9 +90,9 @@ export function DashboardDemo() {
           })}
         </Grid>
 
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card shadow="sm" padding="lg" radius="md" withBorder data-tour="recent-activity">
           <Text size="lg" fw={600} mb="md">
-            Actividad Reciente
+            {t('dashboard.recentActivity')}
           </Text>
           <Stack gap="sm">
             {recentActivity.map((activity, index) => (
