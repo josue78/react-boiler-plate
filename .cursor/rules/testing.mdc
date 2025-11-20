@@ -1,0 +1,1028 @@
+# Testing Rules
+
+This file defines the rules and standards for testing, test coverage, and quality assurance in the project.
+
+## Language of Code
+
+**IMPORTANT**: The primary language for code, comments, test names, and test descriptions will be **English**. This includes:
+
+- Test file names
+- Test function names and descriptions
+- Test data and mocks
+- Assertion messages
+- Test documentation
+
+## General Principles
+
+1. **AAA Pattern**: **MANDATORY** - All tests MUST follow the Arrange-Act-Assert pattern
+2. **Test-Driven Development**: Write tests before or alongside code when possible
+3. **Comprehensive Coverage**: Aim for 90% minimum code coverage before committing
+4. **Test Isolation**: Each test should be independent and not rely on other tests
+5. **Clear Test Names**: Test names should clearly describe what is being tested
+6. **Fast Execution**: Tests should run quickly to enable frequent execution
+7. **Maintainability**: Tests should be easy to read, understand, and maintain
+
+## Code Coverage Requirements
+
+### Minimum Coverage Threshold
+
+**90% minimum code coverage is required before committing code.**
+
+This includes:
+- **Statements**: 90% minimum
+- **Branches**: 90% minimum
+- **Functions**: 90% minimum
+- **Lines**: 90% minimum
+
+### Coverage Enforcement
+
+Coverage is enforced through:
+
+1. **Pre-commit hooks**: Husky will run tests and coverage checks before allowing commits
+2. **CI/CD pipeline**: Coverage checks will run in continuous integration
+3. **Local development**: Developers should run coverage checks before committing
+
+**Example pre-commit hook configuration:**
+
+```bash
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run tests with coverage
+npm run test:coverage
+
+# Check if coverage meets threshold
+npm run test:coverage:check
+```
+
+### Coverage Reports
+
+Coverage reports are generated in:
+- **Terminal**: Real-time coverage during test runs
+- **HTML Report**: `coverage/index.html` for detailed analysis
+- **LCOV Report**: `coverage/lcov.info` for CI/CD integration
+
+## Testing Framework
+
+### Recommended Stack
+
+The project uses:
+- **Vitest**: Fast unit test framework (Vite-native)
+- **React Testing Library**: Component testing utilities
+- **@testing-library/jest-dom**: Custom matchers for DOM assertions
+- **@testing-library/user-event**: User interaction simulation
+- **MSW (Mock Service Worker)**: API mocking for integration tests
+
+### Installation
+
+```bash
+npm install -D vitest @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event @vitest/coverage-v8 msw
+```
+
+## Test Structure
+
+### File Naming
+
+- Test files should be co-located with source files or in `__tests__` directories
+- Use `.test.ts` or `.test.tsx` extension for test files
+- Use `.spec.ts` or `.spec.tsx` for specification-style tests
+
+**Examples:**
+```
+src/
+├── features/
+│   └── dashboard/
+│       ├── components/
+│       │   ├── DashboardDemo.tsx
+│       │   └── DashboardDemo.test.tsx
+│       ├── hooks/
+│       │   ├── useDashboardData.ts
+│       │   └── useDashboardData.test.ts
+│       └── services/
+│           ├── dashboardService.ts
+│           └── dashboardService.test.ts
+```
+
+### Test Organization
+
+Each test file should follow this structure:
+
+```typescript
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+
+describe('ComponentName', () => {
+  beforeEach(() => {
+    // Setup code that runs before each test
+  });
+
+  describe('when condition A', () => {
+    it('should behave in way X', () => {
+      // Test implementation
+    });
+
+    it('should behave in way Y', () => {
+      // Test implementation
+    });
+  });
+
+  describe('when condition B', () => {
+    it('should behave in way Z', () => {
+      // Test implementation
+    });
+  });
+});
+```
+
+## Types of Tests
+
+### Unit Tests
+
+Test individual functions, utilities, and pure logic in isolation.
+
+**Example:**
+
+```typescript
+// src/shared/utils/formatCurrency.test.ts
+import { describe, it, expect } from 'vitest';
+import { formatCurrency } from './formatCurrency';
+
+describe('formatCurrency', () => {
+  it('should format number as USD currency by default', () => {
+    // Arrange
+    const amount = 1234.56;
+
+    // Act
+    const result = formatCurrency(amount);
+
+    // Assert
+    expect(result).toBe('$1,234.56');
+  });
+
+  it('should format with custom currency and locale', () => {
+    // Arrange
+    const amount = 1234.56;
+    const currency = 'EUR';
+    const locale = 'es-ES';
+
+    // Act
+    const result = formatCurrency(amount, currency, locale);
+
+    // Assert
+    expect(result).toBe('1.234,56 €');
+  });
+
+  it('should handle zero values', () => {
+    // Arrange
+    const amount = 0;
+
+    // Act
+    const result = formatCurrency(amount);
+
+    // Assert
+    expect(result).toBe('$0.00');
+  });
+
+  it('should handle negative values', () => {
+    // Arrange
+    const amount = -100;
+
+    // Act
+    const result = formatCurrency(amount);
+
+    // Assert
+    expect(result).toBe('-$100.00');
+  });
+});
+```
+
+### Component Tests
+
+Test React components in isolation, focusing on user interactions and rendered output.
+
+**Example:**
+
+```typescript
+// src/features/dashboard/components/DashboardDemo.test.tsx
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { DashboardDemo } from './DashboardDemo';
+import { useDashboardData } from '../hooks/useDashboardData';
+import * as useDashboardDataModule from '../hooks/useDashboardData';
+
+vi.mock('../hooks/useDashboardData');
+
+describe('DashboardDemo', () => {
+  it('should render loading state initially', () => {
+    // Arrange
+    vi.mocked(useDashboardDataModule.useDashboardData).mockReturnValue({
+      data: null,
+      loading: true,
+      error: null,
+    });
+
+    // Act
+    render(<DashboardDemo />);
+
+    // Assert
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+  });
+
+  it('should render error state when data fetch fails', () => {
+    // Arrange
+    const errorMessage = 'Failed to load data';
+    vi.mocked(useDashboardDataModule.useDashboardData).mockReturnValue({
+      data: null,
+      loading: false,
+      error: errorMessage,
+    });
+
+    // Act
+    render(<DashboardDemo />);
+
+    // Assert
+    expect(screen.getByText(/failed to load data/i)).toBeInTheDocument();
+  });
+
+  it('should render dashboard data when loaded successfully', () => {
+    // Arrange
+    const mockData = {
+      stats: {
+        totalUsers: 1000,
+        totalRevenue: 50000,
+        totalOrders: 250,
+        growthRate: 15,
+      },
+      recentActivity: ['Activity 1', 'Activity 2'],
+    };
+    vi.mocked(useDashboardDataModule.useDashboardData).mockReturnValue({
+      data: mockData,
+      loading: false,
+      error: null,
+    });
+
+    // Act
+    render(<DashboardDemo />);
+
+    // Assert
+    expect(screen.getByText('1000')).toBeInTheDocument();
+    expect(screen.getByText('$50,000')).toBeInTheDocument();
+  });
+});
+```
+
+### Hook Tests
+
+Test custom hooks using `@testing-library/react-hooks` or render hooks directly.
+
+**Example:**
+
+```typescript
+// src/features/dashboard/hooks/useDashboardData.test.ts
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
+import { useDashboardData } from './useDashboardData';
+import { dashboardService } from '../services/dashboardService';
+
+vi.mock('../services/dashboardService');
+
+describe('useDashboardData', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should return loading state initially', () => {
+    // Arrange
+    vi.mocked(dashboardService.getDashboardData).mockResolvedValue({
+      stats: { totalUsers: 0, totalRevenue: 0, totalOrders: 0, growthRate: 0 },
+      recentActivity: [],
+    });
+
+    // Act
+    const { result } = renderHook(() => useDashboardData());
+
+    // Assert
+    expect(result.current.loading).toBe(true);
+    expect(result.current.data).toBeNull();
+  });
+
+  it('should fetch and return dashboard data', async () => {
+    // Arrange
+    const mockData = {
+      stats: {
+        totalUsers: 1000,
+        totalRevenue: 50000,
+        totalOrders: 250,
+        growthRate: 15,
+      },
+      recentActivity: ['Activity 1'],
+    };
+    vi.mocked(dashboardService.getDashboardData).mockResolvedValue(mockData);
+
+    // Act
+    const { result } = renderHook(() => useDashboardData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    // Assert
+    expect(result.current.data).toEqual(mockData);
+    expect(result.current.error).toBeNull();
+  });
+
+  it('should handle errors correctly', async () => {
+    // Arrange
+    const errorMessage = 'Failed to fetch data';
+    vi.mocked(dashboardService.getDashboardData).mockRejectedValue(
+      new Error(errorMessage)
+    );
+
+    // Act
+    const { result } = renderHook(() => useDashboardData());
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    // Assert
+    expect(result.current.error).toBe(errorMessage);
+    expect(result.current.data).toBeNull();
+  });
+});
+```
+
+### Service Tests
+
+Test API services and data fetching logic.
+
+**Example:**
+
+```typescript
+// src/features/dashboard/services/dashboardService.test.ts
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { dashboardService } from './dashboardService';
+import { config } from '../../../shared/config/env';
+
+vi.mock('../../../shared/config/env', () => ({
+  config: {
+    apiUrl: 'https://api.example.com',
+  },
+}));
+
+global.fetch = vi.fn();
+
+describe('dashboardService', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should fetch dashboard data successfully', async () => {
+    // Arrange
+    const mockData = {
+      stats: {
+        totalUsers: 1000,
+        totalRevenue: 50000,
+        totalOrders: 250,
+        growthRate: 15,
+      },
+      recentActivity: ['Activity 1'],
+    };
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockData,
+    } as Response);
+
+    // Act
+    const result = await dashboardService.getDashboardData();
+
+    // Assert
+    expect(fetch).toHaveBeenCalledWith(`${config.apiUrl}/dashboard`);
+    expect(result).toEqual(mockData);
+  });
+
+  it('should throw error when API request fails', async () => {
+    // Arrange
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+    } as Response);
+
+    // Act & Assert
+    await expect(dashboardService.getDashboardData()).rejects.toThrow(
+      'Failed to fetch dashboard data'
+    );
+  });
+});
+```
+
+### Integration Tests
+
+Test multiple components or features working together.
+
+**Example:**
+
+```typescript
+// src/features/dashboard/__tests__/dashboard.integration.test.tsx
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import { MantineProvider } from '@mantine/core';
+import { DashboardDemo } from '../components/DashboardDemo';
+import { server } from '../../../shared/mocks/server';
+
+// Setup MSW server for API mocking
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+describe('Dashboard Integration', () => {
+  it('should render complete dashboard flow', async () => {
+    // Arrange
+    // MSW server is set up in beforeAll hook
+
+    // Act
+    render(
+      <BrowserRouter>
+        <MantineProvider>
+          <DashboardDemo />
+        </MantineProvider>
+      </BrowserRouter>
+    );
+    await screen.findByText('Dashboard');
+
+    // Assert
+    expect(screen.getByText(/total users/i)).toBeInTheDocument();
+    expect(screen.getByText(/recent activity/i)).toBeInTheDocument();
+  });
+});
+```
+
+## Testing Best Practices
+
+### AAA Pattern (Arrange-Act-Assert)
+
+**MANDATORY**: All tests MUST follow the AAA (Arrange-Act-Assert) pattern. This pattern ensures tests are clear, maintainable, and easy to understand.
+
+#### Structure
+
+Every test must be structured in three distinct sections:
+
+1. **Arrange**: Set up all necessary preconditions and inputs
+2. **Act**: Execute the function, method, or behavior being tested
+3. **Assert**: Verify that the expected outcome occurred
+
+#### Basic Example
+
+```typescript
+it('should calculate total price correctly', () => {
+  // Arrange: Set up test data
+  const items = [
+    { price: 10, quantity: 2 },
+    { price: 5, quantity: 3 },
+  ];
+
+  // Act: Execute the function being tested
+  const total = calculateTotal(items);
+
+  // Assert: Verify the result
+  expect(total).toBe(35);
+});
+```
+
+#### Component Testing Example
+
+```typescript
+it('should display user name when data is loaded', async () => {
+  // Arrange: Set up mocks and test data
+  const mockUser = { id: '1', name: 'John Doe', email: 'john@example.com' };
+  vi.mocked(userService.getUser).mockResolvedValue(mockUser);
+
+  // Act: Render component and trigger data loading
+  render(<UserProfile userId="1" />);
+  await waitFor(() => {
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+  });
+
+  // Assert: Verify the component displays correctly
+  expect(screen.getByText('John Doe')).toBeInTheDocument();
+  expect(screen.getByText('john@example.com')).toBeInTheDocument();
+});
+```
+
+#### Hook Testing Example
+
+```typescript
+it('should return loading state initially', () => {
+  // Arrange: Set up mocks
+  vi.mocked(dashboardService.getDashboardData).mockResolvedValue({
+    stats: { totalUsers: 0, totalRevenue: 0, totalOrders: 0, growthRate: 0 },
+    recentActivity: [],
+  });
+
+  // Act: Call the hook
+  const { result } = renderHook(() => useDashboardData());
+
+  // Assert: Verify initial state
+  expect(result.current.loading).toBe(true);
+  expect(result.current.data).toBeNull();
+  expect(result.current.error).toBeNull();
+});
+```
+
+#### Service Testing Example
+
+```typescript
+it('should fetch dashboard data successfully', async () => {
+  // Arrange: Set up mock response
+  const mockData = {
+    stats: {
+      totalUsers: 1000,
+      totalRevenue: 50000,
+      totalOrders: 250,
+      growthRate: 15,
+    },
+    recentActivity: ['Activity 1'],
+  };
+  vi.mocked(fetch).mockResolvedValueOnce({
+    ok: true,
+    json: async () => mockData,
+  } as Response);
+
+  // Act: Call the service method
+  const result = await dashboardService.getDashboardData();
+
+  // Assert: Verify the result and API call
+  expect(fetch).toHaveBeenCalledWith(`${config.apiUrl}/dashboard`);
+  expect(result).toEqual(mockData);
+});
+```
+
+#### User Interaction Example
+
+```typescript
+it('should submit form when submit button is clicked', async () => {
+  // Arrange: Set up component and mocks
+  const handleSubmit = vi.fn();
+  const user = userEvent.setup();
+  render(<UserForm onSubmit={handleSubmit} />);
+
+  // Act: Fill form and submit
+  await user.type(screen.getByLabelText(/name/i), 'John Doe');
+  await user.type(screen.getByLabelText(/email/i), 'john@example.com');
+  await user.click(screen.getByRole('button', { name: /submit/i }));
+
+  // Assert: Verify form submission
+  expect(handleSubmit).toHaveBeenCalledWith({
+    name: 'John Doe',
+    email: 'john@example.com',
+  });
+});
+```
+
+#### Multiple Assertions
+
+When you have multiple assertions, group them logically:
+
+```typescript
+it('should validate user input correctly', () => {
+  // Arrange: Set up test data
+  const validInput = {
+    email: 'user@example.com',
+    password: 'SecurePass123',
+    age: 25,
+  };
+  const invalidInput = {
+    email: 'invalid-email',
+    password: 'weak',
+    age: -5,
+  };
+
+  // Act: Execute validation
+  const validResult = validateUserInput(validInput);
+  const invalidResult = validateUserInput(invalidInput);
+
+  // Assert: Verify valid input
+  expect(validResult.valid).toBe(true);
+  expect(validResult.errors).toHaveLength(0);
+
+  // Assert: Verify invalid input
+  expect(invalidResult.valid).toBe(false);
+  expect(invalidResult.errors).toContain('Invalid email');
+  expect(invalidResult.errors).toContain('Password must be at least 8 characters');
+  expect(invalidResult.errors).toContain('Invalid age');
+});
+```
+
+#### Async Operations
+
+For async operations, use `await` in the Act section:
+
+```typescript
+it('should load data asynchronously', async () => {
+  // Arrange: Set up mock
+  const mockData = { id: '1', name: 'Test' };
+  vi.mocked(apiService.fetchData).mockResolvedValue(mockData);
+
+  // Act: Execute async operation
+  render(<DataComponent />);
+  const dataElement = await screen.findByText('Test');
+
+  // Assert: Verify async result
+  expect(dataElement).toBeInTheDocument();
+  expect(apiService.fetchData).toHaveBeenCalledTimes(1);
+});
+```
+
+#### Error Handling
+
+Test error scenarios using AAA:
+
+```typescript
+it('should handle API errors gracefully', async () => {
+  // Arrange: Set up error mock
+  const errorMessage = 'Network error';
+  vi.mocked(fetch).mockRejectedValueOnce(new Error(errorMessage));
+
+  // Act: Execute operation that should fail
+  render(<DataComponent />);
+  await waitFor(() => {
+    expect(screen.getByText(/error/i)).toBeInTheDocument();
+  });
+
+  // Assert: Verify error handling
+  expect(screen.getByText(/network error/i)).toBeInTheDocument();
+  expect(screen.queryByText(/data/i)).not.toBeInTheDocument();
+});
+```
+
+#### Best Practices for AAA
+
+1. **Clear separation**: Use comments to clearly mark each section
+2. **One Act per test**: Each test should have only one Act section
+3. **Multiple Arrange steps**: You can have multiple setup steps in Arrange
+4. **Multiple Assertions**: You can have multiple assertions, but they should all verify the same behavior
+5. **No logic in Assert**: Assertions should be simple checks, not complex logic
+6. **Descriptive variables**: Use clear variable names in Arrange section
+
+**Good AAA structure:**
+```typescript
+it('should format currency correctly', () => {
+  // Arrange
+  const amount = 1234.56;
+  const currency = 'USD';
+  const locale = 'en-US';
+
+  // Act
+  const result = formatCurrency(amount, currency, locale);
+
+  // Assert
+  expect(result).toBe('$1,234.56');
+});
+```
+
+**Bad - missing clear structure:**
+```typescript
+it('should format currency correctly', () => {
+  expect(formatCurrency(1234.56, 'USD', 'en-US')).toBe('$1,234.56');
+});
+```
+
+**Bad - mixed sections:**
+```typescript
+it('should format currency correctly', () => {
+  const amount = 1234.56;
+  const result = formatCurrency(amount, 'USD', 'en-US');
+  expect(result).toBe('$1,234.56');
+  const anotherResult = formatCurrency(100, 'EUR', 'es-ES'); // Another Act - BAD
+  expect(anotherResult).toBe('100,00 €');
+});
+```
+
+### Test Naming
+
+Use descriptive test names that explain what is being tested:
+
+**Good:**
+```typescript
+it('should display error message when API request fails', () => {});
+it('should call onSubmit handler when form is submitted', () => {});
+it('should disable submit button when form is invalid', () => {});
+```
+
+**Bad:**
+```typescript
+it('works', () => {});
+it('test 1', () => {});
+it('should work correctly', () => {});
+```
+
+### Mocking
+
+Mock external dependencies and isolate units under test:
+
+```typescript
+// Mock modules
+vi.mock('../services/dashboardService');
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+  }),
+}));
+
+// Mock functions
+const mockFetch = vi.fn();
+global.fetch = mockFetch;
+
+// Mock return values
+vi.mocked(dashboardService.getDashboardData).mockResolvedValue(mockData);
+```
+
+### Testing User Interactions
+
+Use `@testing-library/user-event` for realistic user interactions:
+
+```typescript
+import userEvent from '@testing-library/user-event';
+
+it('should update input value when user types', async () => {
+  // Arrange
+  const user = userEvent.setup();
+  render(<TextInput />);
+  const input = screen.getByRole('textbox');
+
+  // Act
+  await user.type(input, 'Hello World');
+
+  // Assert
+  expect(input).toHaveValue('Hello World');
+});
+```
+
+### Testing Async Code
+
+Properly handle asynchronous operations:
+
+```typescript
+it('should load data asynchronously', async () => {
+  // Arrange
+  render(<DataComponent />);
+
+  // Act: Use findBy queries for async elements
+  const dataElement = await screen.findByText('Loaded data');
+
+  // Assert
+  expect(dataElement).toBeInTheDocument();
+});
+
+// Or use waitFor
+it('should update after async operation', async () => {
+  // Arrange
+  render(<AsyncComponent />);
+
+  // Act & Assert: Wait for async update
+  await waitFor(() => {
+    expect(screen.getByText('Updated')).toBeInTheDocument();
+  });
+});
+```
+
+### Testing Accessibility
+
+Test that components are accessible:
+
+```typescript
+it('should have proper ARIA labels', () => {
+  // Arrange
+  render(<Button aria-label="Save">Save</Button>);
+
+  // Act & Assert
+  expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
+});
+
+it('should be keyboard navigable', async () => {
+  // Arrange
+  const user = userEvent.setup();
+  render(<NavigationMenu />);
+
+  // Act
+  await user.tab();
+
+  // Assert
+  expect(screen.getByRole('link', { name: /home/i })).toHaveFocus();
+});
+```
+
+## Coverage Configuration
+
+### Vitest Configuration
+
+Configure coverage in `vitest.config.ts`:
+
+```typescript
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      exclude: [
+        'node_modules/',
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.spec.{ts,tsx}',
+        'src/**/__tests__/**',
+        'src/**/__mocks__/**',
+        'src/main.tsx',
+        'src/vite-env.d.ts',
+      ],
+      thresholds: {
+        statements: 90,
+        branches: 90,
+        functions: 90,
+        lines: 90,
+      },
+    },
+  },
+});
+```
+
+### Package.json Scripts
+
+Add test scripts to `package.json`:
+
+```json
+{
+  "scripts": {
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:check": "vitest run --coverage && npm run test:coverage:threshold",
+    "test:coverage:threshold": "node scripts/check-coverage.js",
+    "test:watch": "vitest --watch"
+  }
+}
+```
+
+### Coverage Check Script
+
+Create a script to verify coverage thresholds:
+
+```javascript
+// scripts/check-coverage.js
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const coveragePath = join(__dirname, '../coverage/coverage-summary.json');
+const coverage = JSON.parse(readFileSync(coveragePath, 'utf-8'));
+
+const thresholds = {
+  statements: 90,
+  branches: 90,
+  functions: 90,
+  lines: 90,
+};
+
+const totals = coverage.total;
+
+let failed = false;
+
+Object.entries(thresholds).forEach(([key, threshold]) => {
+  const percentage = totals[key].pct;
+  if (percentage < threshold) {
+    console.error(
+      `❌ ${key} coverage is ${percentage}%, but threshold is ${threshold}%`
+    );
+    failed = true;
+  } else {
+    console.log(`✅ ${key} coverage: ${percentage}%`);
+  }
+});
+
+if (failed) {
+  console.error('\n❌ Coverage thresholds not met. Commit blocked.');
+  process.exit(1);
+} else {
+  console.log('\n✅ All coverage thresholds met.');
+}
+```
+
+## Pre-commit Hook
+
+Update `.husky/pre-commit` to include coverage checks:
+
+```bash
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run linter
+npm run lint
+
+# Run tests with coverage
+npm run test:coverage:check
+```
+
+## What to Test
+
+### Must Test
+
+- ✅ All utility functions
+- ✅ All custom hooks
+- ✅ All service functions
+- ✅ All components (user interactions, rendering, edge cases)
+- ✅ All business logic
+- ✅ Error handling
+- ✅ Edge cases and boundary conditions
+
+### Don't Test
+
+- ❌ Third-party library code
+- ❌ Implementation details (focus on behavior)
+- ❌ Simple getters/setters without logic
+- ❌ Configuration files
+- ❌ Type definitions
+
+## Testing Checklist
+
+Before committing code, verify:
+
+- [ ] All new code has corresponding tests
+- [ ] Test coverage is at least 90% for new code
+- [ ] All tests pass locally
+- [ ] **All tests follow AAA pattern (Arrange-Act-Assert)**
+- [ ] Tests are fast and run in under 30 seconds
+- [ ] Tests are isolated and don't depend on each other
+- [ ] Test names clearly describe what is being tested
+- [ ] Mocks are used appropriately for external dependencies
+- [ ] Async code is properly tested with `waitFor` or `findBy`
+- [ ] Accessibility is tested where applicable
+- [ ] Edge cases and error scenarios are covered
+- [ ] Code, comments, and test names are in English
+
+## Running Tests
+
+### Development
+
+```bash
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests once
+npm run test:run
+```
+
+### Coverage
+
+```bash
+# Generate coverage report
+npm run test:coverage
+
+# Check coverage thresholds
+npm run test:coverage:check
+
+# View HTML coverage report
+open coverage/index.html
+```
+
+### Before Commit
+
+```bash
+# Run full test suite with coverage check
+npm run test:coverage:check
+```
+
+## Continuous Integration
+
+Coverage checks should be part of CI/CD pipeline:
+
+```yaml
+# .github/workflows/test.yml
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: npm run test:coverage:check
+      - uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+```

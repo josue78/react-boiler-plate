@@ -651,15 +651,23 @@ function App() {
 }
 ```
 
-### Testing (Preparación)
+### Testing
 
-Aunque el proyecto no tiene tests configurados aún, preparar código testeable:
+**IMPORTANT**: See `.cursor/rules/testing.mdc` for comprehensive testing rules and requirements.
 
-- Separar lógica de presentación
-- Funciones puras cuando sea posible
-- Hooks y servicios fáciles de mockear
+Key requirements:
+- **90% minimum code coverage** required before committing
+- All new code must have corresponding tests
+- Tests are enforced via pre-commit hooks
+- Use Vitest + React Testing Library for testing
 
-**Ejemplo testeable:**
+**Write testable code:**
+
+- Separate logic from presentation
+- Use pure functions when possible
+- Make hooks and services easy to mock
+
+**Example of testable code:**
 
 ```typescript
 // Separated logic - easy to test
@@ -672,6 +680,12 @@ function CartSummary({ items }: { items: CartItem[] }) {
   const total = calculateTotal(items);
   return <Text>Total: ${total}</Text>;
 }
+```
+
+**Run tests before committing:**
+
+```bash
+npm run test:coverage:check
 ```
 
 ## Herramientas de Desarrollo
@@ -709,3 +723,6 @@ Before considering code complete, verify:
 - [ ] Code, comments, and variable names in English
 - [ ] Environment variables accessed through config module (not import.meta.env directly)
 - [ ] Appropriate environment used for development/testing (dev, dev:staging, dev:prod)
+- [ ] All new code has corresponding tests (see `.cursor/rules/testing.mdc`)
+- [ ] Test coverage is at least 90% for new code
+- [ ] All tests pass before committing
