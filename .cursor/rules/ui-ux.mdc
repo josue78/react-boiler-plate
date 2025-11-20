@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Reglas de UI/UX
 
 Este archivo define las reglas y estándares para el diseño de interfaces, accesibilidad y experiencia de usuario en el proyecto.
@@ -28,7 +32,7 @@ import { useTranslation } from 'react-i18next';
 
 function UserForm() {
   const { t } = useTranslation();
-  
+
   return (
     <Card padding="lg" radius="md" withBorder>
       <TextInput

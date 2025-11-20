@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Reglas de Documentación
 
 Este archivo define las reglas y estándares para documentar código, componentes, hooks, servicios y APIs en el proyecto.
@@ -37,7 +41,7 @@ Todos los componentes deben incluir:
 /**
  * AppShell is the main container component that provides
  * the layout structure with navbar, header and main content area.
- * 
+ *
  * @example
  * ```tsx
  * <AppShell menuItems={menuItems}>
@@ -82,23 +86,23 @@ Los hooks deben documentar:
 ```typescript
 /**
  * Custom hook to fetch dashboard data.
- * 
+ *
  * Automatically handles loading state, data, and errors.
  * Data is loaded automatically when the component mounts.
- * 
+ *
  * @returns Object with:
  *   - `data`: Dashboard data or `null` if not yet loaded
  *   - `loading`: Loading state (true while fetching data)
  *   - `error`: Error message or `null` if no error
- * 
+ *
  * @example
  * ```tsx
  * function Dashboard() {
  *   const { data, loading, error } = useDashboardData();
- *   
+ *
  *   if (loading) return <Loader />;
  *   if (error) return <Alert>{error}</Alert>;
- *   
+ *
  *   return <DashboardContent data={data} />;
  * }
  * ```
@@ -122,17 +126,17 @@ Los servicios deben documentar:
 ```typescript
 /**
  * Service to interact with the dashboard API.
- * 
+ *
  * Provides methods to fetch dashboard data and
  * handles communication with the backend.
  */
 export const dashboardService = {
   /**
    * Fetches all dashboard data.
-   * 
+   *
    * @returns Promise that resolves with dashboard data
    * @throws {Error} If the request fails or data is invalid
-   * 
+   *
    * @example
    * ```tsx
    * try {
@@ -161,7 +165,7 @@ Los tipos complejos deben incluir:
 ```typescript
 /**
  * Represents a navigation menu item.
- * 
+ *
  * Can be a simple item with a path or a parent item
  * with child elements (submenu).
  */
@@ -193,12 +197,12 @@ Las funciones en `src/shared/utils/` deben documentar:
 ```typescript
 /**
  * Formats a number as currency in the specified format.
- * 
+ *
  * @param amount - Numeric amount to format
  * @param currency - Currency code (ISO 4217), defaults to 'USD'
  * @param locale - Locale for formatting, defaults to 'en-US'
  * @returns String formatted as currency
- * 
+ *
  * @example
  * ```tsx
  * formatCurrency(1234.56) // "$1,234.56"

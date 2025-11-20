@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Reglas de Experiencia de Desarrollo
 
 Este archivo define las reglas y estándares para mejorar la experiencia de desarrollo, estructura de código y uso de herramientas.
@@ -327,11 +331,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 ```typescript
 useEffect(() => {
   const controller = new AbortController();
-  
+
   fetchData(controller.signal)
     .then(setData)
     .catch(setError);
-  
+
   return () => {
     controller.abort(); // Limpiar al desmontar
   };
@@ -378,14 +382,14 @@ export const userService = {
   async getUser(id: string): Promise<User> {
     try {
       const response = await fetch(`/api/users/${id}`);
-      
+
       if (!response.ok) {
         if (response.status === 404) {
           throw new Error('User not found');
         }
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-      
+
       return response.json();
     } catch (error) {
       if (error instanceof Error) {
@@ -454,11 +458,11 @@ The `config` object provides type-safe access to:
 The config module provides utility functions:
 
 ```typescript
-import { 
-  isDevelopment, 
-  isStaging, 
-  isProduction, 
-  debugLog 
+import {
+  isDevelopment,
+  isStaging,
+  isProduction,
+  debugLog
 } from '../../shared/config/env';
 
 // Environment checks
@@ -484,11 +488,11 @@ export const dashboardService = {
     const response = await fetch(`${config.apiUrl}/dashboard`, {
       signal: AbortSignal.timeout(config.apiTimeout),
     });
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch dashboard data');
     }
-    
+
     return response.json();
   },
 };

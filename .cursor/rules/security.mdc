@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Reglas de Seguridad
 
 Este archivo define las reglas y estándares de seguridad para el desarrollo seguro en el proyecto.
