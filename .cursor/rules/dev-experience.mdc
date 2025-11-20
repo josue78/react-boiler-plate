@@ -397,6 +397,161 @@ export const userService = {
 };
 ```
 
+### Environment Configuration
+
+#### Overview
+
+The project uses environment-specific configuration files to manage different settings for development, staging, and production environments. All environment variables must be accessed through the centralized configuration module.
+
+#### Environment Files
+
+The project includes the following environment files:
+
+- `.env.development` - Configuration for local development
+- `.env.staging` - Configuration for staging environment
+- `.env.production` - Configuration for production environment
+- `.env.example` - Template file documenting all available variables
+
+#### Using Environment Configuration
+
+**Always use the centralized config module** instead of accessing `import.meta.env` directly:
+
+**Example correct:**
+
+```typescript
+import { config, debugLog, isDevelopment } from '../../shared/config/env';
+
+// Use config object
+const apiUrl = config.apiUrl;
+const appName = config.appName;
+
+// Use helper functions
+if (isDevelopment()) {
+  debugLog('Debug information here');
+}
+```
+
+**Example incorrect:**
+
+```typescript
+// ❌ Don't access import.meta.env directly
+const apiUrl = import.meta.env.VITE_API_URL;
+```
+
+#### Available Configuration Properties
+
+The `config` object provides type-safe access to:
+
+- `config.apiUrl` - Base API URL
+- `config.appName` - Application name
+- `config.appVersion` - Application version
+- `config.enableDebug` - Debug mode flag
+- `config.apiTimeout` - API request timeout in milliseconds
+- `config.environment` - Current environment ('development' | 'staging' | 'production')
+
+#### Helper Functions
+
+The config module provides utility functions:
+
+```typescript
+import { 
+  isDevelopment, 
+  isStaging, 
+  isProduction, 
+  debugLog 
+} from '../../shared/config/env';
+
+// Environment checks
+if (isDevelopment()) {
+  // Development-only code
+}
+
+// Debug logging (only logs when enableDebug is true)
+debugLog('User data:', userData);
+```
+
+#### Using Config in Services
+
+Always use the config module in service files:
+
+**Example:**
+
+```typescript
+import { config } from '../../shared/config/env';
+
+export const dashboardService = {
+  async getDashboardData(): Promise<DashboardData> {
+    const response = await fetch(`${config.apiUrl}/dashboard`, {
+      signal: AbortSignal.timeout(config.apiTimeout),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch dashboard data');
+    }
+    
+    return response.json();
+  },
+};
+```
+
+#### Switching Between Environments
+
+Use npm scripts to switch between environments:
+
+```bash
+# Development (uses .env.development)
+npm run dev
+
+# Development with staging config (uses .env.staging)
+npm run dev:staging
+
+# Development with production config (uses .env.production)
+npm run dev:prod
+
+# Build for staging
+npm run build:staging
+
+# Build for production
+npm run build:prod
+```
+
+#### Adding New Environment Variables
+
+When adding new environment variables:
+
+1. Add the variable to `.env.example` with documentation
+2. Add the variable to all environment files (`.env.development`, `.env.staging`, `.env.production`)
+3. Update `src/shared/config/env.ts` to include the new variable in the `AppConfig` interface
+4. Add validation or default value handling in the config module
+
+**Example:**
+
+```typescript
+// In .env.example
+# New Feature Flag
+VITE_ENABLE_NEW_FEATURE=false
+
+// In src/shared/config/env.ts
+interface AppConfig {
+  // ... existing properties
+  enableNewFeature: boolean;
+}
+
+export const config: AppConfig = {
+  // ... existing properties
+  enableNewFeature: getBooleanEnv('VITE_ENABLE_NEW_FEATURE', false),
+};
+```
+
+#### Best Practices
+
+1. **Never commit sensitive data** - Only commit `.env.example`, never actual `.env` files
+2. **Use type-safe access** - Always use the `config` module, never `import.meta.env` directly
+3. **Validate required variables** - The config module validates required variables and throws errors if missing
+4. **Use helper functions** - Prefer `isDevelopment()`, `isStaging()`, etc. over checking `config.environment` directly
+5. **Use debugLog** - Use `debugLog()` instead of `console.log()` for debug messages
+6. **Document variables** - Always document new variables in `.env.example`
+
 ### ESLint y Code Quality
 
 #### Seguir Reglas de ESLint
@@ -552,3 +707,5 @@ Before considering code complete, verify:
 - [ ] Error handling implemented
 - [ ] Performance considered (memo, useMemo, useCallback when necessary)
 - [ ] Code, comments, and variable names in English
+- [ ] Environment variables accessed through config module (not import.meta.env directly)
+- [ ] Appropriate environment used for development/testing (dev, dev:staging, dev:prod)
