@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { AppShell } from "./layout/components/AppShell";
-import { TabProvider } from "./shared/context/TabContext";
+import { TabProvider } from "./shared/context";
 import {
   IconLayoutDashboard,
   IconUsers,

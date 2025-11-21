@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { TabContext } from './TabContext';
 import type { Tab, TabContextType } from '../types/tab.types';
 
 const STORAGE_KEY = 'app-tabs-state';
@@ -33,7 +34,7 @@ interface StoredTabState {
 function generateTabId(componentId: string, params?: Record<string, unknown>): string {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 9);
-  
+
   if (params && Object.keys(params).length > 0) {
     // For tabs with params, include a hash of params in the ID
     const paramsKey = JSON.stringify(params);
@@ -114,8 +115,6 @@ function saveTabsToStorage(tabs: Tab[], activeTabId: string | null): void {
     console.error('Failed to save tabs to localStorage:', error);
   }
 }
-
-export const TabContext = createContext<TabContextType | undefined>(undefined);
 
 interface TabProviderProps {
   children: React.ReactNode;
@@ -200,7 +199,7 @@ export function TabProvider({
     ): string => {
       // Always create a new tab, never reuse existing ones
       const newTabId = generateTabId(componentId, params);
-      
+
       setTabs((currentTabs) => {
         const newTab: Tab = {
           id: newTabId,
@@ -224,7 +223,7 @@ export function TabProvider({
   const closeTab = useCallback((tabId: string) => {
     setTabs((currentTabs) => {
       const filtered = currentTabs.filter((tab) => tab.id !== tabId);
-      
+
       // If closing the active tab, switch to another one
       if (activeTabId === tabId) {
         const currentIndex = currentTabs.findIndex((tab) => tab.id === tabId);
