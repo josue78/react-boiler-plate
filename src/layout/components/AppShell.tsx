@@ -13,15 +13,15 @@ import { Sidebar } from "./Sidebar";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageToggle } from "./LanguageToggle";
 import { Logo } from "./Logo";
+import { TabsContainer } from "./TabsContainer";
 import { useTour } from "../../shared/hooks/useTour";
 import type { MenuItem } from "../types/menu.types";
 
 interface AppShellProps {
-  children: React.ReactNode;
   menuItems: MenuItem[];
 }
 
-export function AppShell({ children, menuItems }: AppShellProps) {
+export function AppShell({ menuItems }: AppShellProps) {
   const { startTour } = useTour();
   const { t } = useTranslation();
   const theme = useMantineTheme();
@@ -77,9 +77,12 @@ export function AppShell({ children, menuItems }: AppShellProps) {
       <MantineAppShell.Main
         style={{
           transition: "margin-left 0.3s ease-in-out",
+          height: "calc(100vh - 60px)",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        {children}
+        <TabsContainer />
       </MantineAppShell.Main>
     </MantineAppShell>
   );

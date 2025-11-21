@@ -1,0 +1,7 @@
+manejo de tabs
+manejo de sesion id
+botones a la izquierda
+datagrid complejo
+sumarizacion
+conteo de filas
+botones de tabla a la izquierda

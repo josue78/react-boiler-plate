@@ -1,5 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState, useMemo } from 'react';
 import {
   Container,
   Card,
@@ -49,150 +48,12 @@ type ViewMode = 'table' | 'cards';
 export function UserList({ onEdit, onDelete, onCreate }: UserListProps) {
   const { users, loading, error } = useUsers();
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Initialize state from URL params
-  const [viewMode, setViewMode] = useState<ViewMode>(() => {
-    const view = searchParams.get('view');
-    return (view === 'table' || view === 'cards' ? view : 'cards') as ViewMode;
-  });
-  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') || '');
-  const [roleFilter, setRoleFilter] = useState<UserRole | null>(() => {
-    const role = searchParams.get('role');
-    return (role === 'admin' || role === 'moderator' || role === 'user' ? role : null) as UserRole | null;
-  });
-  const [statusFilter, setStatusFilter] = useState<UserStatus | null>(() => {
-    const status = searchParams.get('status');
-    return (status === 'active' || status === 'inactive' || status === 'pending' ? status : null) as UserStatus | null;
-  });
-
-  // Refs to track current state values without causing re-renders
-  const viewModeRef = useRef(viewMode);
-  const searchQueryRef = useRef(searchQuery);
-  const roleFilterRef = useRef(roleFilter);
-  const statusFilterRef = useRef(statusFilter);
-
-  // Keep refs in sync with state
-  useEffect(() => {
-    viewModeRef.current = viewMode;
-  }, [viewMode]);
-
-  useEffect(() => {
-    searchQueryRef.current = searchQuery;
-  }, [searchQuery]);
-
-  useEffect(() => {
-    roleFilterRef.current = roleFilter;
-  }, [roleFilter]);
-
-  useEffect(() => {
-    statusFilterRef.current = statusFilter;
-  }, [statusFilter]);
-
-  // Ref to track if we're updating URL from state (to avoid sync loop)
-  const isUpdatingFromStateRef = useRef(false);
-
-  // Update URL params when filters change
-  useEffect(() => {
-    // Skip if we're syncing from URL
-    if (isUpdatingFromStateRef.current) {
-      return;
-    }
-
-    const params = new URLSearchParams(searchParams);
-
-    // Always update view parameter
-    if (viewMode === 'cards') {
-      // Remove view param if it exists (cards is default)
-      params.delete('view');
-    } else {
-      params.set('view', viewMode);
-    }
-
-    // Update search query
-    if (searchQuery) {
-      params.set('search', searchQuery);
-    } else {
-      params.delete('search');
-    }
-
-    // Update role filter
-    if (roleFilter) {
-      params.set('role', roleFilter);
-    } else {
-      params.delete('role');
-    }
-
-    // Update status filter
-    if (statusFilter) {
-      params.set('status', statusFilter);
-    } else {
-      params.delete('status');
-    }
-
-    const newParams = params.toString();
-    const currentParams = searchParams.toString();
-
-    // Only update if params actually changed
-    if (currentParams !== newParams) {
-      isUpdatingFromStateRef.current = true;
-      setSearchParams(params, { replace: true });
-      // Reset flag after a microtask
-      queueMicrotask(() => {
-        isUpdatingFromStateRef.current = false;
-      });
-    }
-  }, [viewMode, searchQuery, roleFilter, statusFilter, setSearchParams, searchParams]);
-
-  // Sync state from URL params when they change externally (e.g., browser back/forward buttons or navigation back)
-  useEffect(() => {
-    // Skip if we're updating URL from state
-    if (isUpdatingFromStateRef.current) {
-      return;
-    }
-
-    // Helper functions to safely get values from URL params
-    const getViewFromUrl = (): ViewMode => {
-      const view = searchParams.get('view');
-      return (view === 'table' || view === 'cards' ? view : 'cards') as ViewMode;
-    };
-
-    const getSearchFromUrl = (): string => {
-      return searchParams.get('search') || '';
-    };
-
-    const getRoleFromUrl = (): UserRole | null => {
-      const role = searchParams.get('role');
-      return (role === 'admin' || role === 'moderator' || role === 'user' ? role : null) as UserRole | null;
-    };
-
-    const getStatusFromUrl = (): UserStatus | null => {
-      const status = searchParams.get('status');
-      return (status === 'active' || status === 'inactive' || status === 'pending' ? status : null) as UserStatus | null;
-    };
-
-    const urlView = getViewFromUrl();
-    const urlSearch = getSearchFromUrl();
-    const urlRole = getRoleFromUrl();
-    const urlStatus = getStatusFromUrl();
-
-    // Use queueMicrotask to make state updates asynchronous and avoid cascading renders
-    queueMicrotask(() => {
-      // Only update state if URL values differ from current state (using refs to avoid dependency issues)
-      if (urlView !== viewModeRef.current) {
-        setViewMode(urlView);
-      }
-      if (urlSearch !== searchQueryRef.current) {
-        setSearchQuery(urlSearch);
-      }
-      if (urlRole !== roleFilterRef.current) {
-        setRoleFilter(urlRole);
-      }
-      if (urlStatus !== statusFilterRef.current) {
-        setStatusFilter(urlStatus);
-      }
-    });
-  }, [searchParams]);
+  // Local state for filters (no longer synced with URL)
+  const [viewMode, setViewMode] = useState<ViewMode>('cards');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState<UserRole | null>(null);
+  const [statusFilter, setStatusFilter] = useState<UserStatus | null>(null);
 
   // Filter users based on search query and filters
   const filteredUsers = useMemo(() => {
@@ -349,7 +210,6 @@ export function UserList({ onEdit, onDelete, onCreate }: UserListProps) {
                     setSearchQuery('');
                     setRoleFilter(null);
                     setStatusFilter(null);
-                    setSearchParams({}, { replace: true });
                   }}
                 >
                   {t('users.actions.clearFilters')}
